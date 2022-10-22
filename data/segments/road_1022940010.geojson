@@ -1,1 +1,1 @@
-{"type": "Feature", "properties": {"id": "1022940010", "endId": "6852", "startId": "6850", "length": "4.0", "frc": 1, "fow": 2}, "geometry": {"type": "LineString", "coordinates": [[11.894562, 57.700573], [11.894543, 57.700603]]}, "id": "link-1022940010"}
+{"type": "Feature", "properties": {"id": "1022940010", "endId": "11905", "startId": "11903", "length": "4.0", "frc": 1, "fow": 2}, "geometry": {"type": "LineString", "coordinates": [[11.894562, 57.700573], [11.894543, 57.700603]]}, "id": "link-1022940010"}
