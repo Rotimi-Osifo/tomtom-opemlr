@@ -1,38 +1,7 @@
-class SearchData:
-    def __init__(self):
-        self.ordered_sequence = list()
-    
-    def addToList(self, value):
-        self.ordered_sequence.append(value)
+
 
 def create_road_network_from_id(segmentid, target_search_network):
      return target_search_network[target_search_network['id'].isin([segmentid])]
-
-
-def insertNext(neighbours_key_values, key, searchData):
-    neighbours = neighbours_key_values[key]
-    if searchData.ordered_sequence.count(key) == 0:
-        if len(neighbours) == 1:
-            searchData.addToList(key)
-            nb = neighbours[0]
-            if searchData.ordered_sequence.count(nb):
-                searchData.addToList(nb)
-                insertNext(neighbours_key_values, nb, searchData)
-        elif len(neighbours) == 2:
-            if searchData.ordered_sequence.count(neighbours[0]) == 0:
-                searchData.addToList(neighbours[0])
-                insertNext(neighbours_key_values, neighbours[0], searchData)
-            else:
-                searchData.addToList(neighbours[1])
-                insertNext(neighbours_key_values, neighbours[1], searchData)
-
-def extractOrderedSequenceOfRoads(neighbours_key_values):
-    searchData = SearchData()
-    keys = neighbours_key_values.keys();
-
-    for key in keys:
-        
-
 
 def checkNextOrPreviousGeometry(these_coordinates, those_coordinates, geometryData):
     for this_point in these_coordinates:
@@ -50,7 +19,7 @@ def findNextNeighBour(current_id, current_coordinates, geometryData, roadNetwork
         those_coordinates = geometryData.getCoordinates(that_geom, geometry_type)
         if that_id != current_id:
             if  checkNextOrPreviousGeometry(current_coordinates, those_coordinates,  geometryData) == True:
-                if geometryData.targetIds.count(that_id) >= 1:
+                if geometryData.referenceIds.count(that_id) >= 1:
                     neighbours.append(that_id)
     return neighbours
 
@@ -94,3 +63,40 @@ def findNeighBoursFromCollection(collection, geometryData, geometry_type):
         if len(nextOrPrevious) >= 1:
             neighbours_container[this_id] = nextOrPrevious
     return neighbours_container
+
+def extractOrderedSequenceOfRoads(startId, neighbours_key_values, geometryData):
+    key = startId
+    if len(geometryData.targetIds) <= geometryData.referenceSize:
+        if key in neighbours_key_values:
+            neighbours = neighbours_key_values[key]
+            if geometryData.targetIds.count(key) == 0:
+                if len(neighbours) == 1:
+                    nb = neighbours[0]
+                    if len(geometryData.targetIds) == 0 or geometryData.targetIds.count(nb) == 0:
+                        geometryData.addToTargetIds(key)
+                        geometryData.addToTargetIds(nb)
+                        extractOrderedSequenceOfRoads(nb, neighbours_key_values, geometryData)
+                elif len(neighbours) == 2:
+                    if  geometryData.targetIds.count(neighbours[0]) == 0:
+                        geometryData.addToTargetIds(neighbours[0])
+                        extractOrderedSequenceOfRoads(neighbours[0], neighbours_key_values, geometryData)
+                    else:
+                        geometryData.addToTargetIds(neighbours[1])
+                        extractOrderedSequenceOfRoads(neighbours[1], neighbours_key_values, geometryData)
+            else:
+                if len(neighbours) == 1:
+                    nb = neighbours[0]
+                    if len(geometryData.targetIds) == 0 or geometryData.targetIds.count(nb) == 0:
+                        geometryData.addToTargetIds(key)
+                        geometryData.addToTargetIds(nb)
+                        extractOrderedSequenceOfRoads(nb, neighbours_key_values, geometryData)
+                elif len(neighbours) == 2:
+                    if  geometryData.targetIds.count(neighbours[0]) == 0:
+                        geometryData.addToTargetIds(neighbours[0])
+                        extractOrderedSequenceOfRoads(neighbours[0], neighbours_key_values, geometryData)
+                    else:
+                        geometryData.addToTargetIds(neighbours[1])
+                        extractOrderedSequenceOfRoads(neighbours[1], neighbours_key_values, geometryData)
+    else:
+        return geometryData.targetIds
+

@@ -13,11 +13,20 @@ class GeometryData:
         self.geometry_types = ['geojson.geometry.LineString', \
                                'shapely.geometry.linestring.LineString']
         self.targetIds = list()
-             
-    def setTargetIds(self, roadNetwork):
+        self.referenceIds = list()
+        self.referenceSize = None
+    
+    def setReferenceSize(self, referenceSize):
+        self.referenceSize = referenceSize
+        
+    def addToTargetIds(self, roadid):
+        if self.targetIds.count(roadid) == 0:
+            self.targetIds.append(roadid)
+
+    def setReferenceIds(self, roadNetwork):
         for road in roadNetwork.itertuples():
-            if self.targetIds.count(road.id) == 0:
-                self.targetIds.append(road.id)
+            if self.referenceIds.count(road.id) == 0:
+                self.referenceIds.append(road.id)
          
     def isDuplicate(self, current_point, prev_point):
         return self.pointsAreEqual(current_point, prev_point)

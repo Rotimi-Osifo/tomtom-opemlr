@@ -23,6 +23,13 @@ class FeatureCollectionData:
         self.all_collection = FeatureCollection(self.all_features)
         self.lines_collection = FeatureCollection(self.lines_features)
     
+    def createCollectionsFromIds(self, idList, geometryData, targetNetwork):
+        line_cnt = 0
+        self. __createFeaturesCollection(idList, geometryData, targetNetwork)
+        self.all_collection = FeatureCollection(self.all_features)
+        self.lines_collection = FeatureCollection(self.lines_features)
+    
+
     def createFeaturesCollectionFromJsonLines(self, lines):
         features_list = list()
         for line in lines:
@@ -56,10 +63,40 @@ class FeatureCollectionData:
             "node": "node-"+ str(coord_cnt)  
         }
         return feature
-
+    
+    def __createFeaturesCollection(self, idList, geometryData, targetNetwork):
+        coord_cnt = 0
+        line_cnt = 0
+        for roadId in idList:
+            gdf_loc = targetNetwork[targetNetwork['id'].isin([roadId])]
+            line_cnt = coord_cnt + 1
+            for road in gdf_loc.itertuples():
+                geom = geometryData.get_line_string(road.geometry)
+                coordinates = geom['coordinates']
+                for points in coordinates:
+                    feature = self.__nodeFeature(points, coord_cnt)
+                    self.all_features.append(feature) #nodes
+                    coord_cnt = coord_cnt + 1
+                line_feature = {
+                    "type": "Feature",
+                    "properties":{
+                        "id": road.id,
+                        "direction": 1,
+                        "endId": int(coord_cnt),
+                        "startId": int(line_cnt),
+                        "length": int(road.length),
+                        "frc": cData.highway_frc_mapping.get(road.highway, 0), #deafult case 0
+                        "fow": cData.highway_fow_mapping.get(road.highway, 7) #deafult case 7
+                        },
+                        "geometry": geom,
+                        "id": "link-" + str(road.id)
+                    }
+                self.all_features.append(line_feature)
+                self.lines_features.append(line_feature)
+                self.roads.append(str(road.id))
+    
     def __createFeaturesCollectionsData(self, road_network, geometryData):
         
-    
         coord_cnt = 1
         line_cnt = 0
         for road in road_network.itertuples():
@@ -73,10 +110,11 @@ class FeatureCollectionData:
             line_feature = {
                 "type": "Feature",
                 "properties":{
-                    "id": str(road.id),
-                    "endId": str(coord_cnt),
-                    "startId": str(line_cnt),
-                    "length": str(road.length),
+                    "id": road.id,
+                    "direction": 1,
+                    "endId": int(coord_cnt),
+                    "startId": int(line_cnt),
+                    "length": int(road.length),
                     "frc": cData.highway_frc_mapping.get(road.highway, 0), #deafult case 0
                     "fow": cData.highway_fow_mapping.get(road.highway, 7) #deafult case 7
                 },
