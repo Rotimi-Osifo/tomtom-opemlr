@@ -83,6 +83,12 @@ def extractOrderedSequenceOfRoads(startId, neighbours_key_values, geometryData):
                     else:
                         geometryData.addToTargetIds(neighbours[1])
                         extractOrderedSequenceOfRoads(neighbours[1], neighbours_key_values, geometryData)
+                else:
+                    for id in neighbours:
+                        if  geometryData.targetIds.count(id) == 0:
+                            geometryData.addToTargetIds(id)
+                            extractOrderedSequenceOfRoads(id, neighbours_key_values, geometryData)
+
             else:
                 if len(neighbours) == 1:
                     nb = neighbours[0]
@@ -97,6 +103,11 @@ def extractOrderedSequenceOfRoads(startId, neighbours_key_values, geometryData):
                     else:
                         geometryData.addToTargetIds(neighbours[1])
                         extractOrderedSequenceOfRoads(neighbours[1], neighbours_key_values, geometryData)
+                else:
+                    for id in neighbours:
+                        if  geometryData.targetIds.count(id) == 0:
+                            geometryData.addToTargetIds(id)
+                            extractOrderedSequenceOfRoads(id, neighbours_key_values, geometryData)
     else:
         return geometryData.targetIds
 
