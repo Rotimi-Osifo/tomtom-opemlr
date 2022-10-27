@@ -10,6 +10,9 @@ import json
 
 import constant_data as cData
 
+import Node as nd
+import Line as ln
+
 class FeatureCollectionData:
     def __init__(self):
         self.all_features = list()
@@ -18,6 +21,59 @@ class FeatureCollectionData:
         self.lines_collection = None
         self.all_collection = None
     
+
+    def __nodeFeatureFromNode(self, node):
+        coordinates = node.coordinate
+        feature = {
+            "type": "Feature",
+            "properties":{
+                "id": node.nodeId
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    coordinates[0],
+                    coordinates[1]
+                ]
+            },
+            "node": node.nodeLink
+        }
+        return feature
+
+
+    def createCollectionsFromLines(self, lines):
+
+        for roadId in lines.keys():
+            line = lines[roadId]
+            nodes = line.nodes
+
+            for node in nodes:
+                nodeFeature = self.__nodeFeatureFromNode(node)
+                self.all_features.append(nodeFeature) #nodes
+    
+            line_feature = {
+                    "type": "Feature",
+                    "properties":{
+                        "id": line.roadId,
+                        "direction": line.direction,
+                        "endId": line.endNodeId,
+                        "startId": line.startNodeId,
+                        "length": line.length,
+                        "frc": line.frc,
+                        "fow": line.fow
+                        },
+                        "geometry": line.geometry,
+                        "id": "link-" + str(line.roadId)
+                    }
+            self.all_features.append(line_feature)
+            self.lines_features.append(line_feature)
+            self.roads.append(str(line.roadId))
+        self.all_collection = FeatureCollection(self.all_features)
+        self.lines_collection = FeatureCollection(self.lines_features)
+
+        data_path = "../../../data/"
+        self.writeCollection(data_path + "on_way_map.geojson", self.all_collection)
+
     def createCollections(self, road_network, geometryData):
         self.__createFeaturesCollectionsData(road_network, geometryData)
         self.all_collection = FeatureCollection(self.all_features)
@@ -51,7 +107,7 @@ class FeatureCollectionData:
         feature = {
             "type": "Feature",
             "properties":{
-                "id": str(coord_cnt)
+                "id": int(coord_cnt)
             },
             "geometry": {
                 "type": "Point",
@@ -62,19 +118,23 @@ class FeatureCollectionData:
             },
             "node": "node-"+ str(coord_cnt)  
         }
+
         return feature
     
     def __createFeaturesCollection(self, idList, geometryData, targetNetwork):
-        coord_cnt = 0
+        coord_cnt = 1
         line_cnt = 0
         for roadId in idList:
             gdf_loc = targetNetwork[targetNetwork['id'].isin([roadId])]
-            line_cnt = coord_cnt + 1
+            line_cnt = coord_cnt
             for road in gdf_loc.itertuples():
                 geom = geometryData.get_line_string(road.geometry)
                 coordinates = geom['coordinates']
                 for points in coordinates:
                     feature = self.__nodeFeature(points, coord_cnt)
+
+                   
+
                     self.all_features.append(feature) #nodes
                     coord_cnt = coord_cnt + 1
                 line_feature = {

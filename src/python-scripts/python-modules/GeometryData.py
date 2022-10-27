@@ -48,8 +48,10 @@ class GeometryData:
         line_list = list()
         prev_point = [0.0, 0.0]
         for line in multi_line.geoms:
+            
             for point in line.coords:
                 if self.isDuplicate(point, prev_point) == False:
                     line_list.append((point[0], point[1]))
                     prev_point = point
+        line_list.sort(key = lambda p: p[0])
         return LineString(line_list)
