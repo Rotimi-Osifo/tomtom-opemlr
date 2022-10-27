@@ -35,10 +35,10 @@ class Line:
         self.length = length
     
     def setFrc(self, highway):
-        self.frc = cData.highway_frc_mapping.get(highway, 0), #deafult case 0
+        self.frc = int(cData.highway_frc_mapping.get(highway, 0)) #deafult case 0
     
     def setFow(self, highway):
-        self.fow = cData.highway_fow_mapping.get(highway, 7) #deafult case 7
+        self.fow = int(cData.highway_fow_mapping.get(highway, 7)) #deafult case 7
     
     def setDirection(self, direction):
         self.direction = direction
