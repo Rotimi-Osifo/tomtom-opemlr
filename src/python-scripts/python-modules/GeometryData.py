@@ -45,13 +45,22 @@ class GeometryData:
         return None
 
     def get_line_string(self, multi_line: MultiLineString) -> LineString:
+
         line_list = list()
         prev_point = [0.0, 0.0]
         for line in multi_line.geoms:
-            
+
             for point in line.coords:
                 if self.isDuplicate(point, prev_point) == False:
                     line_list.append((point[0], point[1]))
                     prev_point = point
-        line_list.sort(key = lambda p: p[0])
+        line_list.sort(key=lambda p: p[0])
         return LineString(line_list)
+
+    def get_line_string_shapely(self, shapelyLinstrings) -> LineString:
+        line_list = list()
+        for geom in list(shapelyLinstrings):
+            for point in list(geom.coords):
+                line_list.append((point[0], point[1]))
+        return LineString(line_list)
+
