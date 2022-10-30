@@ -2,6 +2,8 @@ import ConnectedLinesData as connData
 
 import ConnectedSegments as connSegments
 
+import CummulativeDistanceCalculator
+
 def create_road_network_from_id(segmentid, target_search_network):
      return target_search_network[target_search_network['id'].isin([segmentid])]
 
@@ -81,18 +83,49 @@ def findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_netw
     else:
         return connectedSegments
 
+
+def findCloseNeighBoursFromNetwork(geometryData, roadNetwork, target_search_network, startIdList,  idList):
+    neighbours_container = dict()
+
+    geometry_type = geometryData.geometry_types[0]
+    print(idList)
+    if len(idList) <= len(roadNetwork):
+
+        for this_id in startIdList:
+            if idList.count(this_id) == 0:
+                cumDistanceList = CummulativeDistanceCalculator.calculateCummulativeDistance(this_id, target_search_network)
+                idList.append(this_id)
+                neighbours_container[this_id] = cumDistanceList
+                gdf = target_search_network[target_search_network['id'] == this_id]
+                print(gdf['id'].values[0])
+                for road in gdf.itertuples():
+                    this_geom = geometryData.get_line_string(road.geometry)
+                    these_coordinates = geometryData.getCoordinates(this_geom, geometry_type)
+                    nextOrPreviousId = findNextNeighBour(this_id, these_coordinates, geometryData, target_search_network)
+
+                    if len(nextOrPreviousId) >= 1:
+                        findCloseNeighBoursFromNetwork(geometryData, roadNetwork, target_search_network,  nextOrPreviousId,  idList)
+                #neighbours_container[this_id] = nextOrPreviousId
+            #else:
+                #findCloseNeighBoursFromNetwork(geometryData, roadNetwork, target_search_network, nextOrPreviousId)
+    return neighbours_container
+
 def findNeighBoursFromNetwork(geometryData, roadNetwork,  target_search_network):
     neighbours_container = dict()
-    
+    idList = list()
     geometry_type =  geometryData.geometry_types[0]
     for road in roadNetwork.itertuples():
-        this_id = road.id
-        this_geom = geometryData.get_line_string(road.geometry)
-        these_coordinates = geometryData.getCoordinates(this_geom, geometry_type)
-        nextOrPreviousId = findNextNeighBour(this_id, these_coordinates, geometryData, target_search_network)
+        if idList.count(road.id) == 0:
+            this_id = road.id
+            cumDistanceList = CummulativeDistanceCalculator.calculateCummulativeDistance(road.id, target_search_network)
+            idList.append(road.id)
+        #this_geom = geometryData.get_line_string(road.geometry)
+        #this_geom = geometryData.get_line_string_shapely(road.geometry)
+        #these_coordinates = geometryData.getCoordinates(this_geom, geometry_type)
+        #nextOrPreviousId = findNextNeighBour(this_id, these_coordinates, geometryData, target_search_network)
         
-        if len(nextOrPreviousId) >= 1:
-            neighbours_container[this_id] = nextOrPreviousId
+        #if len(nextOrPreviousId) >= 1:
+        #    neighbours_container[this_id] = nextOrPreviousId
     return neighbours_container
 
 def getNextOrPreviousLine(these_coordinates, this_id, those_features,  geometry_type, geometryData):
