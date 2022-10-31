@@ -10,7 +10,6 @@ class LinesCreator:
     def createLines(self, idList, geometryData, targetNetwork):
         lines = lns.Lines()
         coord_cnt = 1
-
         for roadId in idList:
             gdf_loc = targetNetwork[targetNetwork['id'].isin([roadId])]
         
@@ -25,9 +24,9 @@ class LinesCreator:
                 line.setLength(int(road.length))
                 line.setFrc(road.highway)
                 line.setFow(road.highway)
-                print(road.id, len(coordinates), coord_cnt)
+
                 coordinates.sort(key = lambda p: p[0])
-                print(road.id, len(coordinates), coord_cnt)
+
                 for point in coordinates:
 
                     node = nd.Node()
@@ -39,7 +38,6 @@ class LinesCreator:
                     line.addNode(node)
 
                     coord_cnt = coord_cnt + 1
-                print(coord_cnt)
                 line.setEndNodeId(coord_cnt)
                 line.setDirection(int(1))
                 lines.addLine(road.id, line)

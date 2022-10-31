@@ -84,30 +84,32 @@ def findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_netw
         return connectedSegments
 
 
-def findCloseNeighBoursFromNetwork(geometryData, roadNetwork, target_search_network, startIdList,  idList):
+def findCloseNeighBoursFromNetwork(geometryData, roadNetwork, target_search_network):
+    startIdList = [4040302]
+    idList = list()
     neighbours_container = dict()
+    cumDistanceList = 0
+    return findCloseNeighBoursFromNetworkExt(geometryData, roadNetwork, target_search_network, startIdList, idList,
+                                      neighbours_container,  cumDistanceList)
 
+def findCloseNeighBoursFromNetworkExt(geometryData, roadNetwork, target_search_network, startIdList,  idList, neighbours_container,  cumDistanceList):
     geometry_type = geometryData.geometry_types[0]
     print(idList)
     if len(idList) <= len(roadNetwork):
 
         for this_id in startIdList:
             if idList.count(this_id) == 0:
-                cumDistanceList = CummulativeDistanceCalculator.calculateCummulativeDistance(this_id, target_search_network)
+                cumDistanceList =  cumDistanceList + CummulativeDistanceCalculator.calculateCummulativeDistance(this_id, target_search_network)
                 idList.append(this_id)
                 neighbours_container[this_id] = cumDistanceList
                 gdf = target_search_network[target_search_network['id'] == this_id]
-                print(gdf['id'].values[0])
                 for road in gdf.itertuples():
                     this_geom = geometryData.get_line_string(road.geometry)
                     these_coordinates = geometryData.getCoordinates(this_geom, geometry_type)
                     nextOrPreviousId = findNextNeighBour(this_id, these_coordinates, geometryData, target_search_network)
 
                     if len(nextOrPreviousId) >= 1:
-                        findCloseNeighBoursFromNetwork(geometryData, roadNetwork, target_search_network,  nextOrPreviousId,  idList)
-                #neighbours_container[this_id] = nextOrPreviousId
-            #else:
-                #findCloseNeighBoursFromNetwork(geometryData, roadNetwork, target_search_network, nextOrPreviousId)
+                        findCloseNeighBoursFromNetworkExt(geometryData, roadNetwork, target_search_network,  nextOrPreviousId,  idList, neighbours_container,  cumDistanceList)
     return neighbours_container
 
 def findNeighBoursFromNetwork(geometryData, roadNetwork,  target_search_network):
