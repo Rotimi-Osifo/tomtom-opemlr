@@ -9,9 +9,7 @@ import shapely.wkt
 import json
 
 import constant_data as cData
-
-import Node as nd
-import Line as ln
+import GeometryData as gData
 
 class FeatureCollectionData:
     def __init__(self):
@@ -36,12 +34,14 @@ class FeatureCollectionData:
                     coordinates[1]
                 ]
             },
-            "node": node.nodeLink
+            "node": node.name
         }
         return feature
 
 
     def createCollectionsFromLines(self, lines):
+        self.all_features.clear()
+        self.lines_features.clear()
 
         for roadId in lines.keys():
             line = lines[roadId]
@@ -73,6 +73,66 @@ class FeatureCollectionData:
 
         data_path = "../../../data/"
         self.writeCollection(data_path + "one_way_E6_map.geojson", self.all_collection)
+
+    def __setNodesForRoadSegment(self, segmentline):
+        nodes = segmentline.nodes
+
+        print(segmentline.startNodeId, ' ', segmentline.endNodeId)
+        startnode = nodes[segmentline.startNodeId]
+        startNodeFeature = self.__nodeFeatureFromNode(startnode)
+        self.all_features.append(startNodeFeature)
+
+        endnode = nodes[segmentline.endNodeId]
+        endNodeFeature = self.__nodeFeatureFromNode(endnode)
+        self.all_features.append(endNodeFeature)
+
+    def createCollectionsFromGraphLines(self, lines):
+        geometryData = gData.GeometryData()
+
+        for roadId in lines.keys():
+            segmentlines = lines[roadId] #short lines between successive coordinates
+
+            length = 0
+            for segmentline in segmentlines: # setting the nodes only
+                self.__setNodesForRoadSegment(segmentline)
+                length = length + segmentline.length
+
+            firstline  = segmentlines[0]
+            #if firstline.incominglineid is not None:
+            #    seglines = lines[firstline.incominglineid] # prev road segment
+            #    lastposition = len(seglines) - 1
+            #    firstline = seglines[lastposition]
+
+            lastposition = len(segmentlines) - 1
+            lastline = segmentlines[lastposition]
+
+            direction = lastline.direction
+
+            geom = geometryData.get_line_string_from_segmentlines(segmentlines)
+
+            line_feature = {
+                "type": "Feature",
+                "properties": {
+                    "id": roadId,
+                    "direction": direction,
+                    "endId": lastline.endNodeId,
+                    "startId": firstline.startNodeId,
+                    "length": length,
+                    "frc": lastline.frc,
+                    "fow": lastline.fow
+                },
+                "geometry": geom,
+                "id": "link-" + str(lastline.roadId)
+            }
+            self.all_features.append(line_feature)
+            self.lines_features.append(line_feature)
+            self.roads.append(str(lastline.roadId))
+
+        self.all_collection = FeatureCollection(self.all_features)
+        self.lines_collection = FeatureCollection(self.lines_features)
+
+        data_path = "../../../data/"
+        self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
 
     def createCollections(self, road_network, geometryData):
         self.__createFeaturesCollectionsData(road_network, geometryData)

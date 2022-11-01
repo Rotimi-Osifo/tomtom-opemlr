@@ -6,15 +6,19 @@ class Line:
         self.endNodeId = None
         self.geometry = None
         self.highway = None
-        self.nodes = list()
+        self.nodes = dict() # only 2 nodes when using a graph
         self.roadId = None
         self.length = None
         self.frc = None
         self.fow = None
         self.direction = None
+        self.incominglineid = None
 
     def setStartNodeId(self, startNodeId):
         self.startNodeId = startNodeId
+
+    def setincominglineid(self, incominglineid):
+        self.incominglineid = incominglineid
 
     def setEndNodeId(self, endNodeId):
         self.endNodeId = endNodeId
@@ -22,8 +26,8 @@ class Line:
     def setGeometry(self, geometry):
         self.geometry = geometry
     
-    def addNode(self, node):
-        self.nodes.append(node)
+    def addNode(self,  node, nodeId):
+        self.nodes[nodeId] = node
     
     def setHighway(self, highway):
         self.highway = highway

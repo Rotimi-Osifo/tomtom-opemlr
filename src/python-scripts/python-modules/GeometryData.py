@@ -57,6 +57,20 @@ class GeometryData:
         line_list.sort(key=lambda p: p[0])
         return LineString(line_list)
 
+    def get_line_string_from_segmentlines(self, segmentlines) -> LineString:
+
+        line_list = list()
+        prev_point = [0.0, 0.0]
+        for line in segmentlines:
+            coords = line.geometry
+
+            for point in coords:
+                if self.isDuplicate(point, prev_point) == False:
+                    line_list.append((point[0], point[1]))
+                    prev_point = point
+        #line_list.sort(key=lambda p: p[0])
+        return LineString(line_list)
+
     def get_line_string_shapely(self, shapelyLinstrings) -> LineString:
         line_list = list()
         for geom in list(shapelyLinstrings):

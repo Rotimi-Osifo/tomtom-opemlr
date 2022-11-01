@@ -97,7 +97,7 @@ def findCloseNeighBoursFromNetworkExt(geometryData, roadNetwork, target_search_n
 
         for this_id in startIdList:
             if idList.count(this_id) == 0:
-                cumDistanceList =  cumDistanceList + CummulativeDistanceCalculator.calculateCummulativeDistance(this_id, target_search_network)
+                cumDistanceList = cumDistanceList + CummulativeDistanceCalculator.calculateCummulativeDistance(this_id, target_search_network)
                 idList.append(this_id)
                 neighbours_container[this_id] = cumDistanceList
                 gdf = target_search_network[target_search_network['id'] == this_id]

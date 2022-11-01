@@ -3,7 +3,7 @@ class Node:
         self.roadId = None
         self.nodeId = None
         self.coordinate = None
-        self.nodeLink = None
+        self.name = None
     
     def setRoadId(self, roadId):
         self.roadId = roadId
@@ -14,5 +14,5 @@ class Node:
     def setCoordinate(self, coordinate):
         self.coordinate = coordinate
     
-    def setnodeLink(self, nodeId):
-        self.nodeLink =  "node-"+ str(nodeId)
+    def setnodename(self, roadId):
+        self.name =  "node-"+ str(roadId)

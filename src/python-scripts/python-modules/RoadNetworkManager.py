@@ -17,7 +17,7 @@ class RoadNetworkManager:
         nb_s.extractOrderedSequenceOfRoads(startId, nb, geometryData)
 
         linesCreator = LinesCreator.LinesCreator()
-        lines = linesCreator.createLines( geometryData.targetIds, geometryData, targetNetwork)
+        lines = linesCreator.createLines(geometryData.targetIds, geometryData, targetNetwork)
 
         featureCollectionData = fcData.FeatureCollectionData()
         featureCollectionData.createCollectionsFromLines(lines.lines)
@@ -50,5 +50,30 @@ class RoadNetworkManager:
         featurecollectiondata.createCollectionsFromLines(lines.lines)
 
         self.mapAsfeaturesCollection = featurecollectiondata.all_collection
+
+    def createlinesFromGraphNetwork(self, targetNetwork, mainNetwork, graphroadnetwork):
+            geometryData = gdata.GeometryData()
+            idList = list()
+            startIdList = [4040302]
+            neighbours_container = dict()
+            cumDistance = 0
+
+            nb = nb_s.findCloseNeighBoursFromNetworkExt(geometryData, \
+                                                        targetNetwork, \
+                                                        mainNetwork, \
+                                                        startIdList, \
+                                                        idList, \
+                                                        neighbours_container, \
+                                                        cumDistance)
+
+            print('nb -:', nb)
+
+            linescreator = LinesCreator.LinesCreator()
+            lines = linescreator. createConnectedRoadSegments(graphroadnetwork, idList)
+
+            featurecollectiondata = fcData.FeatureCollectionData()
+            featurecollectiondata.createCollectionsFromGraphLines(lines.lines)
+
+            self.mapAsfeaturesCollection = featurecollectiondata.all_collection
 
 
