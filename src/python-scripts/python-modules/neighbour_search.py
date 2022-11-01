@@ -1,6 +1,6 @@
 import ConnectedLinesData as connData
 
-import ConnectedSegments as connSegments
+import connectedsegments as connSegments
 
 import CummulativeDistanceCalculator
 
@@ -24,7 +24,7 @@ def checkNextOrPreviousGeometryExt(these_coordinates, those_coordinates, geometr
 
 def findNextNeighBourExt(current_id, current_coordinates, geometryData, target_search_network, connectedSegmentData):
     geometry_type =  geometryData.geometry_types[0]
-    #neighbours = list()
+
     lineData = connData.LineData()
     for road in target_search_network.itertuples():
         that_id = road.id
@@ -32,13 +32,11 @@ def findNextNeighBourExt(current_id, current_coordinates, geometryData, target_s
         those_coordinates = geometryData.getCoordinates(that_geom, geometry_type)
         if that_id != current_id:
             if  checkNextOrPreviousGeometryExt(current_coordinates, those_coordinates,  geometryData, lineData) == True:
-                #if geometryData.referenceIds.count(that_id) >= 1:
                 lineData.setCurrentSegmentId(current_id)
                 lineData.setConnectedSegmentId(that_id)
                 lineData.setConnectedSegmentIsBefore(False)
                 lineData.setCurrentSegmentIsBefore(True)
                 connectedSegmentData.addToLinesData(lineData)
-                    #neighbours.append(that_id)
     return connectedSegmentData
 
 def findNextNeighBour(current_id, current_coordinates, geometryData, target_search_network):
@@ -61,7 +59,7 @@ def findConnectedSegments(geometryData, roadNetwork,  target_search_network, sta
     return findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, startId, refSize, connectedSegments)
 
 def findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, startId, refSize, connectedSegments):
-    #neighbours_container = dict()
+
     print(connectedSegments.sortedConnectedSegments)
     geometry_type =  geometryData.geometry_types[0]
     this_id = startId

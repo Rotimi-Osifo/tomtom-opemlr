@@ -38,7 +38,7 @@ class LinesCreator:
                     line.addNode(node)
 
                     coord_cnt = coord_cnt + 1
-                line.setEndNodeId(coord_cnt)
+                line.setEndNodeId(coord_cnt - 1)
                 line.setDirection(int(1))
                 lines.addLine(road.id, line)
         self.lines = lines

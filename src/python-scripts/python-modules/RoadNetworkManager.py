@@ -33,16 +33,22 @@ class RoadNetworkManager:
         neighbours_container = dict()
         cumDistanceList = 0
 
-        nb = nb_s.findCloseNeighBoursFromNetworkExt(geometryData, targetNetwork, mainNetwork, startIdList, idList, neighbours_container, cumDistanceList)
+        nb = nb_s.findCloseNeighBoursFromNetworkExt(geometryData, \
+                                                    targetNetwork, \
+                                                    mainNetwork, \
+                                                    startIdList, \
+                                                    idList, \
+                                                    neighbours_container, \
+                                                    cumDistanceList)
 
         print(nb)
 
-        linesCreator = LinesCreator.LinesCreator()
-        lines = linesCreator.createLines( idList, geometryData, targetNetwork)
+        linescreator = LinesCreator.LinesCreator()
+        lines = linescreator.createLines( idList, geometryData, targetNetwork)
 
-        featureCollectionData = fcData.FeatureCollectionData()
-        featureCollectionData.createCollectionsFromLines(lines.lines)
+        featurecollectiondata = fcData.FeatureCollectionData()
+        featurecollectiondata.createCollectionsFromLines(lines.lines)
 
-        self.mapAsfeaturesCollection = featureCollectionData.all_collection
+        self.mapAsfeaturesCollection = featurecollectiondata.all_collection
 
 

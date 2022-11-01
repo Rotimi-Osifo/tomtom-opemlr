@@ -6,7 +6,7 @@ class connectedsegments:
         self.segments = list()
 
     def get_connected_segments(self, target_search_network, networkIdList):
-        dist = 0;
+        dist = 0
         for networkid in networkIdList:
             gdf = target_search_network[target_search_network['id'].isin([networkid])]
 
@@ -26,7 +26,7 @@ class connectedsegments:
                 seg.id = road.id
 
                 speed_m_per_secs = (1000.0 * road.maxspeed) / 3600
-                seg.travel_time = (dist /  speed_m_per_secs)
+                seg.travel_time = (dist / speed_m_per_secs)
 
                 self.segments.append(seg)
 
