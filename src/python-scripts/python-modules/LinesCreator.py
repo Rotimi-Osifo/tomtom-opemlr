@@ -142,19 +142,27 @@ class LinesCreator:
 
         length = 0
 
-        linegeom = None
-        line_list = list()
-        for road in  roadsegment_gdf.itertuples():
+        geometrydata = gData.GeometryData()
+
+        coords_list = list()
+        for road in roadsegment_gdf.itertuples():
             length = length + road.length
             geom_str = str(road.geometry)
             geometry = shwkt.loads(geom_str)
             geom = geometry.coords
+            prev = [0.0, 0,0]
+
             for point in geom:
-                line_list.append((point[0], point[1]))
+                coords_list.append((point[0], point[1]))
 
-        linegeom = LineString(line_list)
+        reduced_coords_list = list()
+        for coord in coords_list:
+            if not geometrydata.pointsAreEqual(coord, prev):
+                reduced_coords_list.append(coord)
+            prev = coord
+
+        linegeom = LineString(reduced_coords_list)
         print(linegeom)
-
 
         row_data = roadsegment_gdf.iloc[0]
         line = ln.Line()

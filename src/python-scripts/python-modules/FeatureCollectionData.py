@@ -107,11 +107,11 @@ class FeatureCollectionData:
             line_feature = {
                 "type": "Feature",
                 "properties": {
-                    "id": roadId,
-                    "direction": line.direction,
+                    "id": int(roadId),
+                    "direction": int(line.direction),
                     "endId": line.endNodeId,
                     "startId": line.startNodeId,
-                    "length": line.length,
+                    "length": int(line.length),
                     "frc": line.frc,
                     "fow": line.fow
                 },
@@ -128,6 +128,7 @@ class FeatureCollectionData:
         #print(self.all_collection)
         data_path = "../../../data/"
         self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
+        self.writeCollection(data_path + "one_way_E6_map_graph_json.json", self.all_collection)
 
     def createCollections(self, road_network, geometryData):
         self.__createFeaturesCollectionsData(road_network, geometryData)
@@ -225,7 +226,7 @@ class FeatureCollectionData:
             line_feature = {
                 "type": "Feature",
                 "properties":{
-                    "id": road.id,
+                    "id": int(road.id),
                     "direction": 1,
                     "endId": int(coord_cnt),
                     "startId": int(line_cnt),
