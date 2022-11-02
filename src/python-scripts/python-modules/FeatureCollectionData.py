@@ -10,6 +10,10 @@ import json
 
 import constant_data as cData
 import GeometryData as gData
+import Nodes
+import Lines
+import Line
+import Node
 
 class FeatureCollectionData:
     def __init__(self):
@@ -20,7 +24,7 @@ class FeatureCollectionData:
         self.all_collection = None
     
 
-    def __nodeFeatureFromNode(self, node):
+    def __nodeFeatureFromNode(self, node: Node.Node):
         coordinates = node.coordinate
         feature = {
             "type": "Feature",
@@ -86,51 +90,42 @@ class FeatureCollectionData:
         endNodeFeature = self.__nodeFeatureFromNode(endnode)
         self.all_features.append(endNodeFeature)
 
-    def createCollectionsFromGraphLines(self, lines):
+    def createCollectionsFromGraphLines(self, lines: Lines.Lines, nodes: Nodes.Nodes):
         geometryData = gData.GeometryData()
 
+        for key in nodes.keys():
+            segmentnodes: list = nodes[key]
+            for node in segmentnodes:
+                n: Node.Node = node
+                n.printnode()
+                feature = self.__nodeFeatureFromNode(n)
+                self.all_features.append(feature)
+
         for roadId in lines.keys():
-            segmentlines = lines[roadId] #short lines between successive coordinates
-
-            length = 0
-            for segmentline in segmentlines: # setting the nodes only
-                self.__setNodesForRoadSegment(segmentline)
-                length = length + segmentline.length
-
-            firstline  = segmentlines[0]
-            #if firstline.incominglineid is not None:
-            #    seglines = lines[firstline.incominglineid] # prev road segment
-            #    lastposition = len(seglines) - 1
-            #    firstline = seglines[lastposition]
-
-            lastposition = len(segmentlines) - 1
-            lastline = segmentlines[lastposition]
-
-            direction = lastline.direction
-
-            geom = geometryData.get_line_string_from_segmentlines(segmentlines)
+            line = lines[roadId] #short lines between successive coordinates
 
             line_feature = {
                 "type": "Feature",
                 "properties": {
                     "id": roadId,
-                    "direction": direction,
-                    "endId": lastline.endNodeId,
-                    "startId": firstline.startNodeId,
-                    "length": length,
-                    "frc": lastline.frc,
-                    "fow": lastline.fow
+                    "direction": line.direction,
+                    "endId": line.endNodeId,
+                    "startId": line.startNodeId,
+                    "length": line.length,
+                    "frc": line.frc,
+                    "fow": line.fow
                 },
-                "geometry": geom,
-                "id": "link-" + str(lastline.roadId)
+                "geometry": line.geometry,
+                "id": "link-" + str(line.roadId)
             }
             self.all_features.append(line_feature)
             self.lines_features.append(line_feature)
-            self.roads.append(str(lastline.roadId))
+            self.roads.append(str(line.roadId))
 
         self.all_collection = FeatureCollection(self.all_features)
         self.lines_collection = FeatureCollection(self.lines_features)
 
+        #print(self.all_collection)
         data_path = "../../../data/"
         self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
 

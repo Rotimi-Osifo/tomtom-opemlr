@@ -3,13 +3,17 @@ import Line as ln
 import Lines as lns
 import shapely.wkt as shwkt
 import GeometryData as gData
+import Nodes
+from geojson import LineString
 
 class LinesCreator:
     def __init__(self):
         self.lines = None
+        self.nodes = None
     
     def createLines(self, idList, geometryData, targetNetwork):
         lines = lns.Lines()
+
         coord_cnt = 1
         for roadId in idList:
             gdf_loc = targetNetwork[targetNetwork['id'].isin([roadId])]
@@ -47,6 +51,9 @@ class LinesCreator:
 
     def createConnectedRoadSegments(self, graphroadnetwork, networkIdList): # graphroadnetwork  must have graphs: u = from node and v = end node
         lines = lns.Lines()
+
+        self.nodes = Nodes.Nodes()
+
         coord_cnt = 1
 
         geometrydata = gData.GeometryData()
@@ -75,7 +82,7 @@ class LinesCreator:
 
 
                 if geometrydata.pointsAreEqual(prev, startpoint) == False:
-                    print("same -: ", road.id, " ", coord_cnt)
+                    print("Not the same same -: ", road.id, " ", coord_cnt)
                     startnode.setCoordinate([startpoint[0], startpoint[1]])
                     startnode.setNodeId(coord_cnt)
                     startnode.setRoadId(int(road.id))
@@ -84,6 +91,8 @@ class LinesCreator:
                     line.setStartNodeId(coord_cnt)
                     line.addNode(startnode, coord_cnt)
                     line.setGeometry(geom)
+                    coord_cnt = coord_cnt + 1
+
                 else:
                     startpoint = prev
                     startnode.setCoordinate([startpoint[0], startpoint[1]])
@@ -93,6 +102,9 @@ class LinesCreator:
                     line.setStartNodeId(prev_node.nodeId)
                     line.addNode(startnode, prev_node.nodeId)
                     line.setGeometry(geom)
+                    coord_cnt = coord_cnt + 1
+
+                self.nodes.addToNodes(startnode)
 
                 line.setHighway(road.highway)
                 line.setRoadId(int(road.id))
@@ -101,7 +113,7 @@ class LinesCreator:
                 line.setFow(road.highway)
                 line.setincominglineid(incominglineid)
 
-                coord_cnt = coord_cnt + 1
+
                 endnode = nd.Node()
                 endpoint = geom[1]
                 endnode.setCoordinate([endpoint[0], endpoint[1]])
@@ -110,6 +122,7 @@ class LinesCreator:
                 endnode.setnodename(int(road.id))
                 prev = endpoint
                 prev_node = endnode
+                self.nodes.addToNodes(endnode)
 
                 line.setEndNodeId(coord_cnt)
                 line.addNode( endnode, coord_cnt)
@@ -118,10 +131,80 @@ class LinesCreator:
                 segmentlines.append(line)
                 coord_cnt = coord_cnt + 1
 
+                self.nodes.printnodes()
+
             lines.addLine(networkid, segmentlines)
             incominglineid = networkid
         self.lines = lines
         return lines
+
+    def __createSegmentWithNodes(self, currentsegmentnodes: list, roadsegment_gdf, prevsegmentnodes: list):
+
+        length = 0
+
+        linegeom = None
+        line_list = list()
+        for road in  roadsegment_gdf.itertuples():
+            length = length + road.length
+            geom_str = str(road.geometry)
+            geometry = shwkt.loads(geom_str)
+            geom = geometry.coords
+            for point in geom:
+                line_list.append((point[0], point[1]))
+
+        linegeom = LineString(line_list)
+        print(linegeom)
+
+
+        row_data = roadsegment_gdf.iloc[0]
+        line = ln.Line()
+        line.setHighway(row_data.highway)
+        line.setRoadId(int(row_data.id))
+        line.setLength(length)
+        line.setFrc(row_data.highway)
+        line.setFow(row_data.highway)
+        line.setDirection(int(1))
+
+        line.setGeometry(linegeom)
+        if prevsegmentnodes is not None:
+            pos = len(prevsegmentnodes) - 1
+            firstnode: nd.Node = prevsegmentnodes[pos]
+            firstnode.setnodename(int(row_data.id))
+            firstnode.setRoadId(int(row_data.id))
+            line.setStartNodeId(firstnode.nodeId)
+            line.addNode(firstnode, firstnode.nodeId)
+
+            lastpos = len(currentsegmentnodes) - 1
+            lastnode = currentsegmentnodes[lastpos]
+            line.setEndNodeId(lastnode.nodeId)
+            line.addNode(lastnode, lastnode.nodeId)
+        else:
+            firstnode = currentsegmentnodes[0]
+            line.setStartNodeId(firstnode.nodeId)
+            line.addNode(firstnode, firstnode.nodeId)
+
+            lastpos = len(currentsegmentnodes) - 1
+            lastnode = currentsegmentnodes[lastpos]
+            line.setEndNodeId(lastnode.nodeId)
+            line.addNode(lastnode, lastnode.nodeId)
+
+        return line
+
+
+    def createConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes): # graphroadnetwork  must have graphs: u = from node and v = end node
+        self.lines = lns.Lines()
+        prevsegmentnodes = None
+        for key in nodes.keys():
+            segmentnodes = nodes[key]
+            gdf = graphroadnetwork[graphroadnetwork['id'].isin([key])]
+            line = self.__createSegmentWithNodes(segmentnodes, gdf, prevsegmentnodes)
+            self.lines.addLine(key, line)
+
+            prevsegmentnodes = segmentnodes
+        return self.lines
+
+
+
 
             
     

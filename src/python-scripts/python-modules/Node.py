@@ -16,3 +16,7 @@ class Node:
     
     def setnodename(self, roadId):
         self.name =  "node-"+ str(roadId)
+
+    def printnode(self):
+        print("printing node")
+        print(self.roadId, " ", self.nodeId, " [", self.coordinate[0], ",", self.coordinate[1], "]")

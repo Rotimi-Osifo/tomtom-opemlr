@@ -2,6 +2,9 @@ import GeometryData as gdata
 import FeatureCollectionData as fcData
 import neighbour_search as nb_s
 import LinesCreator
+import NodesCreator
+import Nodes
+
 
 class RoadNetworkManager:
     def __init__(self):
@@ -51,6 +54,24 @@ class RoadNetworkManager:
 
         self.mapAsfeaturesCollection = featurecollectiondata.all_collection
 
+    def createNodesFromGraphNetwork(self, targetNetwork, mainNetwork, graphroadnetwork):
+        geometryData = gdata.GeometryData()
+        idList = list()
+        startIdList = [4040302]
+        neighbours_container = dict()
+        cumDistance = 0
+
+        nb = nb_s.findCloseNeighBoursFromNetworkExt(geometryData, \
+                                                    targetNetwork, \
+                                                    mainNetwork, \
+                                                    startIdList, \
+                                                    idList, \
+                                                    neighbours_container, \
+                                                    cumDistance)
+        nodesCreator = NodesCreator.NodesCreator()
+        nodesCreator.createnodesfromgraph(graphroadnetwork, idList)
+
+
     def createlinesFromGraphNetwork(self, targetNetwork, mainNetwork, graphroadnetwork):
             geometryData = gdata.GeometryData()
             idList = list()
@@ -66,14 +87,18 @@ class RoadNetworkManager:
                                                         neighbours_container, \
                                                         cumDistance)
 
-            print('nb -:', nb)
+            #print('nb -:', nb)
+
+            nodesCreator = NodesCreator.NodesCreator()
+            nodes: Nodes = nodesCreator.createnodesfromgraph(graphroadnetwork, idList)
 
             linescreator = LinesCreator.LinesCreator()
-            lines = linescreator. createConnectedRoadSegments(graphroadnetwork, idList)
+            #lines = linescreator. createConnectedRoadSegments(graphroadnetwork, idList, linescreator.nodes)
+            lines = linescreator.createConnectedRoadSegmentsFromGraph(graphroadnetwork, nodes.nodes)
+
+            lines.printlines()
 
             featurecollectiondata = fcData.FeatureCollectionData()
-            featurecollectiondata.createCollectionsFromGraphLines(lines.lines)
+            featurecollectiondata.createCollectionsFromGraphLines(lines.lines, nodes.nodes)
 
             self.mapAsfeaturesCollection = featurecollectiondata.all_collection
-
-

@@ -14,6 +14,11 @@ class Line:
         self.direction = None
         self.incominglineid = None
 
+    def printline(self):
+        for key in self.nodes.keys():
+            print("printing node for -: ", key)
+            node = self.nodes[key]
+            node.printnode()
     def setStartNodeId(self, startNodeId):
         self.startNodeId = startNodeId
 
