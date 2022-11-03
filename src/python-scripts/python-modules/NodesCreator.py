@@ -29,7 +29,7 @@ class NodesCreator:
                 startnode = nd.Node()
                 startpoint = geom[0]
 
-                if cnt < 2:
+                if cnt < 1:
                     cnt = cnt + 1
                     coord_cnt = coord_cnt + 1
                     print(cnt, " ", coord_cnt, " ", road.id)

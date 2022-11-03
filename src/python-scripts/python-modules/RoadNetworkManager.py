@@ -4,6 +4,7 @@ import neighbour_search as nb_s
 import LinesCreator
 import NodesCreator
 import Nodes
+import neighboursearch
 
 
 class RoadNetworkManager:
@@ -72,6 +73,13 @@ class RoadNetworkManager:
         nodesCreator.createnodesfromgraph(graphroadnetwork, idList)
 
 
+    def createNodesFromGraphNetworkExt(self, filtered_graph_nodes, filtered_network_graph):
+        nsearch = neighboursearch.neighboursearch()
+        idList = nsearch.findCloseNeighBoursFromNetwork(filtered_graph_nodes, filtered_network_graph)
+
+        nodesCreator = NodesCreator.NodesCreator()
+        nodesCreator.createnodesfromgraph(filtered_network_graph,  idList)
+
     def createlinesFromGraphNetwork(self, targetNetwork, mainNetwork, graphroadnetwork):
             geometryData = gdata.GeometryData()
             idList = list()
@@ -96,9 +104,19 @@ class RoadNetworkManager:
             #lines = linescreator. createConnectedRoadSegments(graphroadnetwork, idList, linescreator.nodes)
             lines = linescreator.createConnectedRoadSegmentsFromGraph(graphroadnetwork, nodes.nodes)
 
-            lines.printlines()
+    def createlinesFromGraphNetworkExt(self, filtered_graph_nodes, filtered_network_graph):
+        nsearch = neighboursearch.neighboursearch()
+        idList = nsearch.findCloseNeighBoursFromNetwork(filtered_graph_nodes, filtered_network_graph)
 
-            featurecollectiondata = fcData.FeatureCollectionData()
-            featurecollectiondata.createCollectionsFromGraphLines(lines.lines, nodes.nodes)
+        nodesCreator = NodesCreator.NodesCreator()
+        nodes: Nodes = nodesCreator.createnodesfromgraph(filtered_network_graph, idList)
 
-            self.mapAsfeaturesCollection = featurecollectiondata.all_collection
+        linescreator = LinesCreator.LinesCreator()
+        lines = linescreator.createConnectedRoadSegmentsFromGraph(filtered_network_graph, nodes.nodes)
+
+        lines.printlines()
+
+        featurecollectiondata = fcData.FeatureCollectionData()
+        featurecollectiondata.createCollectionsFromGraphLines(lines.lines, nodes.nodes)
+
+        self.mapAsfeaturesCollection = featurecollectiondata.all_collection

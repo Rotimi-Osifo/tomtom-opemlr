@@ -176,16 +176,19 @@ class LinesCreator:
         line.setGeometry(linegeom)
         if prevsegmentnodes is not None:
             pos = len(prevsegmentnodes) - 1
-            firstnode: nd.Node = prevsegmentnodes[pos]
-            firstnode.setnodename(int(row_data.id))
-            firstnode.setRoadId(int(row_data.id))
-            line.setStartNodeId(firstnode.nodeId)
-            line.addNode(firstnode, firstnode.nodeId)
-
             lastpos = len(currentsegmentnodes) - 1
-            lastnode = currentsegmentnodes[lastpos]
-            line.setEndNodeId(lastnode.nodeId)
-            line.addNode(lastnode, lastnode.nodeId)
+            if pos >= 0 and lastpos >= 0:
+                firstnode: nd.Node = prevsegmentnodes[pos]
+                firstnode.setnodename(int(row_data.id))
+                firstnode.setRoadId(int(row_data.id))
+                line.setStartNodeId(firstnode.nodeId)
+                line.addNode(firstnode, firstnode.nodeId)
+
+                lastnode = currentsegmentnodes[lastpos]
+                line.setEndNodeId(lastnode.nodeId)
+                line.addNode(lastnode, lastnode.nodeId)
+            else:
+                return None
         else:
             firstnode = currentsegmentnodes[0]
             line.setStartNodeId(firstnode.nodeId)
@@ -206,7 +209,8 @@ class LinesCreator:
             segmentnodes = nodes[key]
             gdf = graphroadnetwork[graphroadnetwork['id'].isin([key])]
             line = self.__createSegmentWithNodes(segmentnodes, gdf, prevsegmentnodes)
-            self.lines.addLine(key, line)
+            if line is not None:
+                self.lines.addLine(key, line)
 
             prevsegmentnodes = segmentnodes
         return self.lines
