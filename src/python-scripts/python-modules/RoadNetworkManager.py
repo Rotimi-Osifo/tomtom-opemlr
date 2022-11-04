@@ -80,33 +80,40 @@ class RoadNetworkManager:
         nodesCreator = NodesCreator.NodesCreator()
         nodesCreator.createnodesfromgraph(filtered_network_graph,  idList)
 
-    def createlinesFromGraphNetwork(self, targetNetwork, mainNetwork, graphroadnetwork):
-            geometryData = gdata.GeometryData()
-            idList = list()
-            startIdList = [4040302]
-            neighbours_container = dict()
-            cumDistance = 0
+    def createlinesFromGraphNetwork(self, targetNetwork, mainNetwork, graphroadnetwork,  startIdList):
+        geometryData = gdata.GeometryData()
+        idList = list()
+        neighbours_container = dict()
+        cumDistance = 0
 
-            nb = nb_s.findCloseNeighBoursFromNetworkExt(geometryData, \
-                                                        targetNetwork, \
-                                                        mainNetwork, \
-                                                        startIdList, \
-                                                        idList, \
-                                                        neighbours_container, \
-                                                        cumDistance)
+        nb = nb_s.findCloseNeighBoursFromNetworkExt(geometryData, \
+                                                    targetNetwork, \
+                                                    mainNetwork, \
+                                                    startIdList, \
+                                                    idList, \
+                                                    neighbours_container, \
+                                                    cumDistance)
 
-            #print('nb -:', nb)
+        nodesCreator = NodesCreator.NodesCreator()
+        nodes: Nodes = nodesCreator.createnodesfromgraph(graphroadnetwork, idList)
 
-            nodesCreator = NodesCreator.NodesCreator()
-            nodes: Nodes = nodesCreator.createnodesfromgraph(graphroadnetwork, idList)
+        linescreator = LinesCreator.LinesCreator()
+        lines = linescreator.createConnectedRoadSegmentsFromGraph(graphroadnetwork, nodes.nodes)
 
-            linescreator = LinesCreator.LinesCreator()
-            #lines = linescreator. createConnectedRoadSegments(graphroadnetwork, idList, linescreator.nodes)
-            lines = linescreator.createConnectedRoadSegmentsFromGraph(graphroadnetwork, nodes.nodes)
+        featurecollectiondata = fcData.FeatureCollectionData()
+        featurecollectiondata.createCollectionsFromGraphLines(lines.lines, nodes.nodes)
+
+        self.mapAsfeaturesCollection = featurecollectiondata.all_collection
 
     def createlinesFromGraphNetworkExt(self, filtered_graph_nodes, filtered_network_graph):
+        connectedsegments = list()
+        node_row = filtered_graph_nodes .iloc[0]
+        u = node_row.id
         nsearch = neighboursearch.neighboursearch()
-        idList = nsearch.findCloseNeighBoursFromNetwork(filtered_graph_nodes, filtered_network_graph)
+        #findCloseNeighBoursFromNetwork(self, nodes_gdf, edges, connectedsegments , u)
+       #idList = nsearch.findCloseNeighBoursFromNetwork(filtered_graph_nodes, filtered_network_graph, connectedsegments, u)
+        #idList = nsearch.findCloseNeighBoursFromNetwork(filtered_graph_nodes, filtered_network_graph)
+        idList = nsearch.findCloseNeighBoursFromNetworkExt(filtered_network_graph)
 
         nodesCreator = NodesCreator.NodesCreator()
         nodes: Nodes = nodesCreator.createnodesfromgraph(filtered_network_graph, idList)
