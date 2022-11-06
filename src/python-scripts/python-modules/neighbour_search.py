@@ -115,7 +115,8 @@ def findCloseNeighBoursFromNetworkExt(geometryData, roadNetwork, target_search_n
 def findCloseNeighBoursFromRoadNetwork(geometryData, roadNetwork, target_search_network, startIdList, idList):
     geometry_type = geometryData.geometry_types[0]
     print(idList)
-    if len(idList) <= len(roadNetwork):
+    loopstop = 2 * (len(roadNetwork))
+    if len(idList) <= loopstop:
 
         for this_id in startIdList:
             if idList.count(this_id) == 0:

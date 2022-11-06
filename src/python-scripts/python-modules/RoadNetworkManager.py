@@ -12,6 +12,9 @@ import startdata
 class RoadNetworkManager:
     def __init__(self):
         self.mapAsfeaturesCollection = None
+        self.featurecollectiondata = None
+        self.nodes = None
+        self.lines = None
 
     def getstartdata(self):
         startdatalist = list()
@@ -159,7 +162,12 @@ class RoadNetworkManager:
                 lines = linescreator.createConnectedRoadSegmentsFromGraph(graphroadnetwork, nodes.nodes, startdata.lanedirection)
 
                 featurecollectiondata.createCollectionsFromGraphLines(lines.lines, nodes.nodes)
+
+
             self.mapAsfeaturesCollection = featurecollectiondata.all_collection
+            self.nodes = nodes.nodes
+            self.lines = lines.lines
+            self.featurecollectiondata = featurecollectiondata
 
             data_path = "../../../data/"
             featurecollectiondata.writeCollection(data_path + "one_way_E6_map_graph.geojson", featurecollectiondata.all_collection)
