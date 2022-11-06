@@ -6,6 +6,9 @@ import GeometryData as gData
 import Nodes
 from geojson import LineString
 
+import line_data_initializer
+
+
 class LinesCreator:
     def __init__(self):
         self.lines = None
@@ -228,14 +231,93 @@ class LinesCreator:
 
             prevsegmentnodes = segmentnodes
         return self.lines
-
-
-
-
-            
     
+    def __getconnectedline(self, lines: dict, v):
+        for key in lines.keys():
+            line = lines[key]
+            if line.firstu is not None:
+                if line.firstu == v:
+                    return line
+        return None
+    
+    
+    def __buildForwardAndBackwardConnectionsFromGraph(self, graphroadnetwork):
+        initializedlines:dict = line_data_initializer.initializelines(graphroadnetwork) 
+        for key in initializedlines.keys():
+            this_line = initializedlines[key]
+            nextline = self.__getconnectedline(initializedlines, this_line.lastv) #nextline forward
+            if nextline is not None:
+                this_line.setoutgoinglineid(nextline.roadId)
+                if nextline.ncominglineid is None:
+                    nextline.setincominglineid(key)
+                    initializedlines.pop(nextline.roadId)
+                    initializedlines[nextline.roadId] = nextline
+            
+            initializedlines.pop(key)
+            initializedlines[key] = this_line
+            
+        return initializedlines
+    
+    def __getlastnodefromnodesdict(self, nodes):
+        n = None
+        for key in nodes:
+            n = nodes[key]
+        return n
+    
+    def __getfirstnodefromnodesdict(self, nodes):
+        for key in nodes:
+            return nodes[key]
+    
+    
+    
+    def __buildSegmentWithNodes(self, lines: dict,  nodes: dict, direction, key):
+
+        line:ln.Line = lines[key] 
+        incoming = line.incominglineid
+        currentroadsegmentnodes:dict = nodes[key]
+        line.setDirection(int(direction))
         
+
+        if incoming is not None:
+            prevsegmentnodes = nodes[incoming]
+            prevsegmentnode = self.__getlastnodefromnodesdict(prevsegmentnodes)
+            
+            if prevsegmentnode is not None:
+                firstnode: nd.Node = prevsegmentnode
+                firstnode.setnodename(int(key))
+                firstnode.setRoadId(int(key))
+                line.setStartNodeId(firstnode.nodeId)
+                line.addNode(firstnode, firstnode.nodeId)
+
+                lastnode = self.__getlastnodefromnodesdict(currentroadsegmentnodes)
+                line.setEndNodeId(lastnode.nodeId)
+                line.addNode(lastnode, lastnode.nodeId)
+            else:
+                return None
+        else:
+            firstnode = self.__getfirstnodefromnodesdict(currentroadsegmentnodes)
+            line.setStartNodeId(firstnode.nodeId)
+            line.addNode(firstnode, firstnode.nodeId)
+
+            lastnode = self.__getlastnodefromnodesdict(currentroadsegmentnodes)
+            line.setEndNodeId(lastnode.nodeId)
+            line.addNode(lastnode, lastnode.nodeId)
+
+        return line
+    
+    def  buildConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes,  direction):
         
+        initializedlines = self.__buildForwardAndBackwardConnectionsFromGraph(graphroadnetwork)
+        for key in  initializedlines.keys():
+            
+            line = self.__buildSegmentWithNodes(initializedlines,  nodes, direction, key)
+
+            if line is not None:
+                self.lines.addLine(key, line)
+
+        return self.lines
+    
+
         
         
         

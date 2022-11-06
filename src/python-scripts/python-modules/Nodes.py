@@ -4,8 +4,8 @@ class Nodes:
     def __init__(self):
         self.nodes = dict()
 
-    def addToNodes(self, node, networkid):
-        self.nodes[networkid] = node
+    def addToNodes(self, node, roadid):
+        self.nodes[roadid] = node
 
     def printnodes(self):
         print("printing nodes")
@@ -14,13 +14,3 @@ class Nodes:
             print("printing nodes for -:", key)
             for node in segmentnodes:
                 node.printnode()
-
-    def hassamecoords(self, currentnode, prevnode):
-        if prevnode is None:
-            return False
-        else:
-            currentcoord = currentnode.coordinate
-            prevcoord = prevnode.coordinate
-            geometrydata = gData.GeometryData()
-
-            return geometrydata.pointsAreEqual(currentcoord, prevcoord)

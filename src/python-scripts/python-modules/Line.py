@@ -13,6 +13,7 @@ class Line:
         self.fow = None
         self.direction = None
         self.incominglineid = None
+        self.outgoinglineid = None
         self.firstu = None # first from line in a graph
         self.lastv = None # last to line in a graph
 
@@ -59,6 +60,9 @@ class Line:
 
     def setLastV(self, lastv):
         self.lastv = lastv
+    
+    def setoutgoinglineid(self, roadid):
+        self.outgoinglineid = roadid
 
 
 
