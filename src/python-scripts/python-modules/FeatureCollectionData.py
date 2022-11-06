@@ -126,9 +126,9 @@ class FeatureCollectionData:
         self.lines_collection = FeatureCollection(self.lines_features)
 
         #print(self.all_collection)
-        data_path = "../../../data/"
-        self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
-        self.writeCollection(data_path + "one_way_E6_map_graph_json.json", self.all_collection)
+        #data_path = "../../../data/"
+        #self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
+        #self.writeCollection(data_path + "one_way_E6_map_graph_json.json", self.all_collection)
 
     def createCollections(self, road_network, geometryData):
         self.__createFeaturesCollectionsData(road_network, geometryData)

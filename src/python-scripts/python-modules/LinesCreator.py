@@ -138,7 +138,7 @@ class LinesCreator:
         self.lines = lines
         return lines
 
-    def __createSegmentWithNodes(self, currentsegmentnodes: list, roadsegment_gdf, prevsegmentnodes: list):
+    def __createSegmentWithNodes(self, currentsegmentnodes: list, roadsegment_gdf, prevsegmentnodes: list,  direction):
 
         length = 0
 
@@ -171,7 +171,7 @@ class LinesCreator:
         line.setLength(length)
         line.setFrc(row_data.highway)
         line.setFow(row_data.highway)
-        line.setDirection(int(1))
+        line.setDirection(int(direction))
 
         line.setGeometry(linegeom)
         if prevsegmentnodes is not None:
@@ -202,13 +202,13 @@ class LinesCreator:
         return line
 
 
-    def createConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes): # graphroadnetwork  must have graphs: u = from node and v = end node
+    def createConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes,  direction): # graphroadnetwork  must have graphs: u = from node and v = end node
         self.lines = lns.Lines()
         prevsegmentnodes = None
         for key in nodes.keys():
             segmentnodes = nodes[key]
             gdf = graphroadnetwork[graphroadnetwork['id'].isin([key])]
-            line = self.__createSegmentWithNodes(segmentnodes, gdf, prevsegmentnodes)
+            line = self.__createSegmentWithNodes(segmentnodes, gdf, prevsegmentnodes,  direction)
             if line is not None:
                 self.lines.addLine(key, line)
 
