@@ -19,7 +19,7 @@ class neighboursearch:
 
     def __get_first_u(self, gdf):
         for seg in gdf.itertuples():
-            return gdf.u
+            return seg.u
 
     def __traverse_path(self, edges, u):
         gdf_loc = edges[edges['u'] == u]

@@ -10,7 +10,17 @@ class LinesCreator:
     def __init__(self):
         self.lines = None
         self.nodes = None
-    
+
+    def __get_last_v(self, gdf):
+        last_v = None
+        for seg in gdf.itertuples():
+            last_v = seg.v
+        return last_v
+
+    def __get_first_u(self, gdf):
+        for seg in gdf.itertuples():
+            return seg.u
+
     def createLines(self, idList, geometryData, targetNetwork):
         lines = lns.Lines()
 
@@ -172,6 +182,9 @@ class LinesCreator:
         line.setFrc(row_data.highway)
         line.setFow(row_data.highway)
         line.setDirection(int(direction))
+        line.setFirstU(int(self.__get_first_u(roadsegment_gdf)))
+        line.setLastV(int(self.__get_last_v(roadsegment_gdf)))
+
 
         line.setGeometry(linegeom)
         if prevsegmentnodes is not None:
@@ -183,6 +196,7 @@ class LinesCreator:
                 firstnode.setRoadId(int(row_data.id))
                 line.setStartNodeId(firstnode.nodeId)
                 line.addNode(firstnode, firstnode.nodeId)
+                line.setincominglineid(int(firstnode.roadId)) #the incoming roadid to this line
 
                 lastnode = currentsegmentnodes[lastpos]
                 line.setEndNodeId(lastnode.nodeId)
