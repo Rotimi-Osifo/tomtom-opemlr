@@ -15,6 +15,7 @@ class RoadNetworkManager:
         self.featurecollectiondata = None
         self.nodes = None
         self.lines = None
+        self.idlist = None
 
     def getstartdata(self):
         startdatalist = list()
@@ -168,6 +169,7 @@ class RoadNetworkManager:
             self.nodes = nodes.nodes
             self.lines = lines.lines
             self.featurecollectiondata = featurecollectiondata
+            self.idlist = idList
 
             data_path = "../../../data/"
             featurecollectiondata.writeCollection(data_path + "one_way_E6_map_graph.geojson", featurecollectiondata.all_collection)

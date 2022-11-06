@@ -130,6 +130,46 @@ class FeatureCollectionData:
         #self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
         #self.writeCollection(data_path + "one_way_E6_map_graph_json.json", self.all_collection)
 
+    def createCollectionsFromGraphLinesExt(self, lines: Lines.Lines, nodes: Nodes.Nodes, idlist):
+        geometryData = gData.GeometryData()
+
+        for roadid in idlist:
+            segmentnodes: list = nodes[roadid]
+            for node in segmentnodes:
+                n: Node.Node = node
+                n.printnode()
+                feature = self.__nodeFeatureFromNode(n)
+                self.all_features.append(feature)
+
+        for roadId in idlist:
+            line = lines[roadId] #short lines between successive coordinates
+
+            line_feature = {
+                "type": "Feature",
+                "properties": {
+                    "id": int(roadId),
+                    "direction": int(line.direction),
+                    "endId": line.endNodeId,
+                    "startId": line.startNodeId,
+                    "length": int(line.length),
+                    "frc": line.frc,
+                    "fow": line.fow
+                },
+                "geometry": line.geometry,
+                "id": "link-" + str(line.roadId)
+            }
+            self.all_features.append(line_feature)
+            self.lines_features.append(line_feature)
+            self.roads.append(str(line.roadId))
+
+        self.all_collection = FeatureCollection(self.all_features)
+        self.lines_collection = FeatureCollection(self.lines_features)
+
+        #print(self.all_collection)
+        #data_path = "../../../data/"
+        #self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
+        #self.writeCollection(data_path + "one_way_E6_map_graph_json.json", self.all_collection)
+
     def createCollections(self, road_network, geometryData):
         self.__createFeaturesCollectionsData(road_network, geometryData)
         self.all_collection = FeatureCollection(self.all_features)
