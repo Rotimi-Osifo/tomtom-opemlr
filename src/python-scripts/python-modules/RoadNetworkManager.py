@@ -175,5 +175,27 @@ class RoadNetworkManager:
             featurecollectiondata.writeCollection(data_path + "one_way_E6_map_graph.geojson", featurecollectiondata.all_collection)
             featurecollectiondata.writeCollection(data_path + "one_way_E6_map_graph_json.json", featurecollectiondata.all_collection)
 
+    def buidLinesFromRoadGraphNetwork(self, graphroadnetwork):
+        nodesCreator = NodesCreator.NodesCreator()
+        nodes: Nodes = nodesCreator.buildnodesfromgraph(graphroadnetwork)
+
+        linescreator = LinesCreator.LinesCreator()
+        lines = linescreator. buildConnectedRoadSegmentsFromGraph(graphroadnetwork, nodes.nodes, int(1))
+
+        featurecollectiondata = fcData.FeatureCollectionData()
+        featurecollectiondata.createCollectionsFromGraphLines(lines.lines, nodes.nodes)
+
+        self.mapAsfeaturesCollection = featurecollectiondata.all_collection
+        self.nodes = nodes.nodes
+        self.lines = lines.lines
+        self.featurecollectiondata = featurecollectiondata
+        #self.idlist = idList
+
+        data_path = "../../../data/"
+        featurecollectiondata.writeCollection(data_path + "one_way_E6_map_graph.geojson",
+                                              featurecollectiondata.all_collection)
+        featurecollectiondata.writeCollection(data_path + "one_way_E6_map_graph_json.json",
+                                              featurecollectiondata.all_collection)
+
 
 

@@ -11,8 +11,8 @@ import line_data_initializer
 
 class LinesCreator:
     def __init__(self):
-        self.lines = None
-        self.nodes = None
+        self.lines: dict = None
+        self.nodes: dict = None
 
     def __get_last_v(self, gdf):
         last_v = None
@@ -30,7 +30,7 @@ class LinesCreator:
         coord_cnt = 1
         for roadId in idList:
             gdf_loc = targetNetwork[targetNetwork['id'].isin([roadId])]
-        
+
             line = ln.Line()
             line.setStartNodeId(coord_cnt)
             for road in gdf_loc.itertuples():
@@ -43,16 +43,15 @@ class LinesCreator:
                 line.setFrc(road.highway)
                 line.setFow(road.highway)
 
-                coordinates.sort(key = lambda p: p[0])
+                coordinates.sort(key=lambda p: p[0])
 
                 for point in coordinates:
-
                     node = nd.Node()
                     node.setCoordinate(point)
                     node.setNodeId(coord_cnt)
                     node.setRoadId(int(road.id))
                     node.setnodename(road.id)
-                    
+
                     line.addNode(node, road.id)
 
                     coord_cnt = coord_cnt + 1
@@ -62,7 +61,8 @@ class LinesCreator:
         self.lines = lines
         return lines
 
-    def createConnectedRoadSegments(self, graphroadnetwork, networkIdList): # graphroadnetwork  must have graphs: u = from node and v = end node
+    def createConnectedRoadSegments(self, graphroadnetwork,
+                                    networkIdList):  # graphroadnetwork  must have graphs: u = from node and v = end node
         lines = lns.Lines()
 
         self.nodes = Nodes.Nodes()
@@ -87,12 +87,10 @@ class LinesCreator:
                 geometry = shwkt.loads(geom_str)
                 geom = geometry.coords
 
-
                 startnode = nd.Node()
                 startpoint = geom[0]
 
                 line = ln.Line()  # line connecting 2 successive points in a road segment
-
 
                 if geometrydata.pointsAreEqual(prev, startpoint) == False:
                     print("Not the same same -: ", road.id, " ", coord_cnt)
@@ -126,7 +124,6 @@ class LinesCreator:
                 line.setFow(road.highway)
                 line.setincominglineid(incominglineid)
 
-
                 endnode = nd.Node()
                 endpoint = geom[1]
                 endnode.setCoordinate([endpoint[0], endpoint[1]])
@@ -138,7 +135,7 @@ class LinesCreator:
                 self.nodes.addToNodes(endnode)
 
                 line.setEndNodeId(coord_cnt)
-                line.addNode( endnode, coord_cnt)
+                line.addNode(endnode, coord_cnt)
                 line.setDirection(int(1))
 
                 segmentlines.append(line)
@@ -151,7 +148,7 @@ class LinesCreator:
         self.lines = lines
         return lines
 
-    def __createSegmentWithNodes(self, currentsegmentnodes: list, roadsegment_gdf, prevsegmentnodes: list,  direction):
+    def __createSegmentWithNodes(self, currentsegmentnodes: list, roadsegment_gdf, prevsegmentnodes: list, direction):
 
         length = 0
 
@@ -163,7 +160,7 @@ class LinesCreator:
             geom_str = str(road.geometry)
             geometry = shwkt.loads(geom_str)
             geom = geometry.coords
-            prev = [0.0, 0,0]
+            prev = [0.0, 0, 0]
 
             for point in geom:
                 coords_list.append((point[0], point[1]))
@@ -188,7 +185,6 @@ class LinesCreator:
         line.setFirstU(int(self.__get_first_u(roadsegment_gdf)))
         line.setLastV(int(self.__get_last_v(roadsegment_gdf)))
 
-
         line.setGeometry(linegeom)
         if prevsegmentnodes is not None:
             pos = len(prevsegmentnodes) - 1
@@ -199,7 +195,7 @@ class LinesCreator:
                 firstnode.setRoadId(int(row_data.id))
                 line.setStartNodeId(firstnode.nodeId)
                 line.addNode(firstnode, firstnode.nodeId)
-                line.setincominglineid(int(firstnode.roadId)) #the incoming roadid to this line
+                line.setincominglineid(int(firstnode.roadId))  # the incoming roadid to this line
 
                 lastnode = currentsegmentnodes[lastpos]
                 line.setEndNodeId(lastnode.nodeId)
@@ -218,20 +214,20 @@ class LinesCreator:
 
         return line
 
-
-    def createConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes,  direction): # graphroadnetwork  must have graphs: u = from node and v = end node
+    def createConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes,
+                                             direction):  # graphroadnetwork  must have graphs: u = from node and v = end node
         self.lines = lns.Lines()
         prevsegmentnodes = None
         for key in nodes.keys():
             segmentnodes = nodes[key]
             gdf = graphroadnetwork[graphroadnetwork['id'].isin([key])]
-            line = self.__createSegmentWithNodes(segmentnodes, gdf, prevsegmentnodes,  direction)
+            line = self.__createSegmentWithNodes(segmentnodes, gdf, prevsegmentnodes, direction)
             if line is not None:
                 self.lines.addLine(key, line)
 
             prevsegmentnodes = segmentnodes
         return self.lines
-    
+
     def __getconnectedline(self, lines: dict, v):
         for key in lines.keys():
             line = lines[key]
@@ -239,87 +235,87 @@ class LinesCreator:
                 if line.firstu == v:
                     return line
         return None
-    
-    
+
     def __buildForwardAndBackwardConnectionsFromGraph(self, graphroadnetwork):
-        initializedlines:dict = line_data_initializer.initializelines(graphroadnetwork) 
+        line_data_initializerloc = line_data_initializer.line_data_initializer()
+        initializedlines: dict = line_data_initializerloc.initializelines(graphroadnetwork)
         for key in initializedlines.keys():
             this_line = initializedlines[key]
-            nextline = self.__getconnectedline(initializedlines, this_line.lastv) #nextline forward
+            nextline = self.__getconnectedline(initializedlines, this_line.lastv)  # nextline forward
             if nextline is not None:
                 this_line.setoutgoinglineid(nextline.roadId)
-                if nextline.ncominglineid is None:
+                if nextline.incominglineid is None:
                     nextline.setincominglineid(key)
-                    initializedlines.pop(nextline.roadId)
                     initializedlines[nextline.roadId] = nextline
-            
-            initializedlines.pop(key)
+
             initializedlines[key] = this_line
-            
         return initializedlines
-    
+
     def __getlastnodefromnodesdict(self, nodes):
         n = None
         for key in nodes:
             n = nodes[key]
         return n
-    
+
     def __getfirstnodefromnodesdict(self, nodes):
         for key in nodes:
             return nodes[key]
-    
-    
-    
-    def __buildSegmentWithNodes(self, lines: dict,  nodes: dict, direction, key):
 
-        line:ln.Line = lines[key] 
+    def __getfirstnodefromnodeslist(self, nodeslist: list):
+        return nodeslist[0]
+
+    def __getlastnodefromnodeslist(self, nodeslist: list):
+        lastnode = None
+        for node in  nodeslist:
+            lastnode = node
+        return lastnode
+
+    def __buildSegmentWithNodes(self, lines: dict, nodes: dict, direction, key):
+
+        line: ln.Line = lines[key]
         incoming = line.incominglineid
-        currentroadsegmentnodes:dict = nodes[key]
+        currentroadsegmentnodes: dict = nodes[key]
         line.setDirection(int(direction))
-        
 
         if incoming is not None:
             prevsegmentnodes = nodes[incoming]
-            prevsegmentnode = self.__getlastnodefromnodesdict(prevsegmentnodes)
-            
-            if prevsegmentnode is not None:
-                firstnode: nd.Node = prevsegmentnode
+            prevsegmentnodelist = self.__getlastnodefromnodesdict(prevsegmentnodes)
+
+            if prevsegmentnodelist is not None:
+                firstnode: nd.Node = self.__getlastnodefromnodeslist(prevsegmentnodelist)
                 firstnode.setnodename(int(key))
                 firstnode.setRoadId(int(key))
                 line.setStartNodeId(firstnode.nodeId)
                 line.addNode(firstnode, firstnode.nodeId)
 
-                lastnode = self.__getlastnodefromnodesdict(currentroadsegmentnodes)
+                currentsegmentnodelist = self.__getlastnodefromnodesdict(currentroadsegmentnodes)
+                lastnode = self.__getlastnodefromnodeslist(currentsegmentnodelist)
                 line.setEndNodeId(lastnode.nodeId)
                 line.addNode(lastnode, lastnode.nodeId)
             else:
                 return None
         else:
-            firstnode = self.__getfirstnodefromnodesdict(currentroadsegmentnodes)
+            currentsegmentnodelist = self.__getfirstnodefromnodesdict(currentroadsegmentnodes)
+            firstnode = currentsegmentnodelist[0]
             line.setStartNodeId(firstnode.nodeId)
             line.addNode(firstnode, firstnode.nodeId)
 
-            lastnode = self.__getlastnodefromnodesdict(currentroadsegmentnodes)
+            currentsegmentnodelist = self.__getlastnodefromnodesdict(currentroadsegmentnodes)
+            lastnode = self.__getlastnodefromnodeslist(currentsegmentnodelist)
             line.setEndNodeId(lastnode.nodeId)
             line.addNode(lastnode, lastnode.nodeId)
 
         return line
-    
-    def  buildConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes,  direction):
-        
+
+    def buildConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes, direction):
+        self.lines = lns.Lines()
         initializedlines = self.__buildForwardAndBackwardConnectionsFromGraph(graphroadnetwork)
-        for key in  initializedlines.keys():
-            
-            line = self.__buildSegmentWithNodes(initializedlines,  nodes, direction, key)
+        for key in initializedlines.keys():
+
+            line = self.__buildSegmentWithNodes(initializedlines, nodes, direction, key)
 
             if line is not None:
                 self.lines.addLine(key, line)
+                self.lines.printlines()
 
         return self.lines
-    
-
-        
-        
-        
-
-

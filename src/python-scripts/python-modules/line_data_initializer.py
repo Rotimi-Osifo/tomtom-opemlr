@@ -24,8 +24,6 @@ class line_data_initializer:
     def initializelines(self, filtered_graph_network):
         
         geometrydata = gData.GeometryData()
-        
-        
 
         for road in filtered_graph_network.itertuples():
             length = 0
@@ -64,6 +62,7 @@ class line_data_initializer:
             line.setLastV(int(self.__get_last_v(gdf)))
             
             self.lines[road.id] = line
-            
+
+        return   self.lines
         
 

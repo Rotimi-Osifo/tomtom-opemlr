@@ -25,7 +25,7 @@ class NodesCreator:
         cnt = 0
 
         geometrydata = gData.GeometryData()
-        for segment in  graphroadnetwork.itertuples():
+        for segment in graphroadnetwork.itertuples():
             gdf = graphroadnetwork[graphroadnetwork['id'].isin([segment.id])] # road segment geopandas
             roadsegmentnodes = dict()
             prevnode = None
@@ -69,7 +69,7 @@ class NodesCreator:
                     node.setCoordinate([point[0], point[1]])
                     node.setRoadId(int(road.id))
                     node.setnodename(int(road.id))
-                    if not self.hassamecoords(node, prevnode,  geometrydata):
+                    if not self.__hassamecoords(node, prevnode,  geometrydata):
                         coord_cnt = coord_cnt + 1
                         node.setNodeId(coord_cnt)
                         segmentnodes.append(node)
@@ -135,7 +135,7 @@ class NodesCreator:
                     node.setCoordinate([point[0], point[1]])
                     node.setRoadId(int(road.id))
                     node.setnodename(int(road.id))
-                    if not self.hassamecoords(node, prevnode,  geometrydata):
+                    if not self.__hassamecoords(node, prevnode,  geometrydata):
                         coord_cnt = coord_cnt + 1
                         node.setNodeId(coord_cnt)
                         segmentnodes.append(node)

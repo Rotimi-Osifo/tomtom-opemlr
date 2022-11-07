@@ -1,6 +1,6 @@
-import ConnectedLinesData as connData
+#import ConnectedLinesData as connData
 
-import connectedsegments as connSegments
+#import connectedsegments as connSegments
 
 import CummulativeDistanceCalculator
 
@@ -24,22 +24,22 @@ def checkNextOrPreviousGeometryExt(these_coordinates, those_coordinates, geometr
                 return True
     return False
 
-def findNextNeighBourExt(current_id, current_coordinates, geometryData, target_search_network, connectedSegmentData):
-    geometry_type =  geometryData.geometry_types[0]
-
-    lineData = connData.LineData()
-    for road in target_search_network.itertuples():
-        that_id = road.id
-        that_geom = geometryData.get_line_string(road.geometry)
-        those_coordinates = geometryData.getCoordinates(that_geom, geometry_type)
-        if that_id != current_id:
-            if  checkNextOrPreviousGeometryExt(current_coordinates, those_coordinates,  geometryData, lineData) == True:
-                lineData.setCurrentSegmentId(current_id)
-                lineData.setConnectedSegmentId(that_id)
-                lineData.setConnectedSegmentIsBefore(False)
-                lineData.setCurrentSegmentIsBefore(True)
-                connectedSegmentData.addToLinesData(lineData)
-    return connectedSegmentData
+# def findNextNeighBourExt(current_id, current_coordinates, geometryData, target_search_network, connectedSegmentData):
+#     geometry_type =  geometryData.geometry_types[0]
+#
+#     lineData = connData.LineData()
+#     for road in target_search_network.itertuples():
+#         that_id = road.id
+#         that_geom = geometryData.get_line_string(road.geometry)
+#         those_coordinates = geometryData.getCoordinates(that_geom, geometry_type)
+#         if that_id != current_id:
+#             if  checkNextOrPreviousGeometryExt(current_coordinates, those_coordinates,  geometryData, lineData) == True:
+#                 lineData.setCurrentSegmentId(current_id)
+#                 lineData.setConnectedSegmentId(that_id)
+#                 lineData.setConnectedSegmentIsBefore(False)
+#                 lineData.setCurrentSegmentIsBefore(True)
+#                 connectedSegmentData.addToLinesData(lineData)
+#     return connectedSegmentData
 
 def findNextNeighBour(current_id, current_coordinates, geometryData, target_search_network):
     geometry_type =  geometryData.geometry_types[0]
@@ -53,35 +53,35 @@ def findNextNeighBour(current_id, current_coordinates, geometryData, target_sear
                 neighbours.append(that_id)
     return neighbours
 
-def findConnectedSegments(geometryData, roadNetwork,  target_search_network, startId):
-    connectedSegments = connSegments.ConnectedSegments()
-    connectedSegments.addToUnsortedConnectedLines(roadNetwork)
-    refSize = len(connectedSegments.unsortedConnectedSegments)
+# def findConnectedSegments(geometryData, roadNetwork,  target_search_network, startId):
+#     connectedSegments = connSegments.ConnectedSegments()
+#     connectedSegments.addToUnsortedConnectedLines(roadNetwork)
+#     refSize = len(connectedSegments.unsortedConnectedSegments)
+#
+#     return findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, startId, refSize, connectedSegments)
 
-    return findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, startId, refSize, connectedSegments)
-
-def findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, startId, refSize, connectedSegments):
-
-    print(connectedSegments.sortedConnectedSegments)
-    geometry_type =  geometryData.geometry_types[0]
-    this_id = startId
-    if len(connectedSegments.sortedConnectedSegments) < refSize:
-        connectedLinesData =  connData.ConnectedLinesData()
-        rawGeometry = connectedSegments.unsortedConnectedSegments[this_id]
-        this_geom = geometryData.get_line_string(rawGeometry)
-        these_coordinates = geometryData.getCoordinates(this_geom, geometry_type)
-        connectedLinesData_r = findNextNeighBourExt(this_id, these_coordinates, geometryData, target_search_network, connectedLinesData)
-        
-        if len(connectedLinesData_r.linesData) >= 1:
-            for  lineData in connectedLinesData_r.linesData:
-                if connectedSegments.sortedConnectedSegments.count(lineData.currentSegmentId) == 0:
-                    connectedSegments.addToSortedConnectedLines(lineData.currentSegmentId)
-                if connectedSegments.sortedConnectedSegments.count(lineData.connectedSegmentId) == 0:
-                    connectedSegments.addToSortedConnectedLines(lineData.connectedSegmentId)
-                    findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, lineData.connectedSegmentId, refSize, connectedSegments)
-            findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, this_id, refSize, connectedSegments)        
-    else:
-        return connectedSegments
+# def findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, startId, refSize, connectedSegments):
+#
+#     print(connectedSegments.sortedConnectedSegments)
+#     geometry_type =  geometryData.geometry_types[0]
+#     this_id = startId
+#     if len(connectedSegments.sortedConnectedSegments) < refSize:
+#         connectedLinesData =  connData.ConnectedLinesData()
+#         rawGeometry = connectedSegments.unsortedConnectedSegments[this_id]
+#         this_geom = geometryData.get_line_string(rawGeometry)
+#         these_coordinates = geometryData.getCoordinates(this_geom, geometry_type)
+#         connectedLinesData_r = findNextNeighBourExt(this_id, these_coordinates, geometryData, target_search_network, connectedLinesData)
+#
+#         if len(connectedLinesData_r.linesData) >= 1:
+#             for  lineData in connectedLinesData_r.linesData:
+#                 if connectedSegments.sortedConnectedSegments.count(lineData.currentSegmentId) == 0:
+#                     connectedSegments.addToSortedConnectedLines(lineData.currentSegmentId)
+#                 if connectedSegments.sortedConnectedSegments.count(lineData.connectedSegmentId) == 0:
+#                     connectedSegments.addToSortedConnectedLines(lineData.connectedSegmentId)
+#                     findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, lineData.connectedSegmentId, refSize, connectedSegments)
+#             findNeighBoursFromNetworkList(geometryData, roadNetwork,  target_search_network, this_id, refSize, connectedSegments)
+#     else:
+#         return connectedSegments
 
 
 def findCloseNeighBoursFromNetwork(geometryData, roadNetwork, target_search_network):

@@ -90,16 +90,18 @@ class FeatureCollectionData:
         endNodeFeature = self.__nodeFeatureFromNode(endnode)
         self.all_features.append(endNodeFeature)
 
-    def createCollectionsFromGraphLines(self, lines: Lines.Lines, nodes: Nodes.Nodes):
+    def createCollectionsFromGraphLines(self, lines: dict, nodes: dict):
         geometryData = gData.GeometryData()
 
         for key in nodes.keys():
-            segmentnodes: list = nodes[key]
-            for node in segmentnodes:
-                n: Node.Node = node
-                n.printnode()
-                feature = self.__nodeFeatureFromNode(n)
-                self.all_features.append(feature)
+            segmentnodesdict: dict = nodes[key]
+            for keyloc in segmentnodesdict.keys():
+                segmentnodeslist : list = segmentnodesdict[keyloc]
+                for node in segmentnodeslist:
+                    n: Node.Node = node
+                    n.printnode()
+                    feature = self.__nodeFeatureFromNode(n)
+                    self.all_features.append(feature)
 
         for roadId in lines.keys():
             line = lines[roadId] #short lines between successive coordinates
