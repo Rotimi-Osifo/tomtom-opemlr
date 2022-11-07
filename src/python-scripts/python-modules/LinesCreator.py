@@ -13,6 +13,7 @@ class LinesCreator:
     def __init__(self):
         self.lines: dict = None
         self.nodes: dict = None
+        self.initializedlines = None
 
     def __get_last_v(self, gdf):
         last_v = None
@@ -184,7 +185,15 @@ class LinesCreator:
         line.setDirection(int(direction))
         line.setFirstU(int(self.__get_first_u(roadsegment_gdf)))
         line.setLastV(int(self.__get_last_v(roadsegment_gdf)))
-
+        
+        nextline = self.__getconnectedline(self.initializedlines, line.lastv)
+        if nextline is not None:
+           line.setoutgoinglineid(int(nextline.roadId))
+            
+        previousline = self.__getincomingline(self.initializedlines, line.firstu)
+        if previousline is not None:
+            line.setincominglineid(int(previousline.roadId))   # the incoming roadid to this line
+            
         line.setGeometry(linegeom)
         if prevsegmentnodes is not None:
             pos = len(prevsegmentnodes) - 1
@@ -195,7 +204,7 @@ class LinesCreator:
                 firstnode.setRoadId(int(row_data.id))
                 line.setStartNodeId(firstnode.nodeId)
                 line.addNode(firstnode, firstnode.nodeId)
-                line.setincominglineid(int(firstnode.roadId))  # the incoming roadid to this line
+                
 
                 lastnode = currentsegmentnodes[lastpos]
                 line.setEndNodeId(lastnode.nodeId)
@@ -211,11 +220,15 @@ class LinesCreator:
             lastnode = currentsegmentnodes[lastpos]
             line.setEndNodeId(lastnode.nodeId)
             line.addNode(lastnode, lastnode.nodeId)
-
+        
+        print("incoming line id -: " + str(line.incominglineid) + "; this line id -: " + str(line.roadId) + ";  out going line id -: " + str(line.outgoinglineid))
         return line
 
     def createConnectedRoadSegmentsFromGraph(self, graphroadnetwork, nodes: Nodes.Nodes,
                                              direction):  # graphroadnetwork  must have graphs: u = from node and v = end node
+        line_data_initializerloc = line_data_initializer.line_data_initializer()
+        self.initializedlines = line_data_initializerloc.initializelines(graphroadnetwork)
+        
         self.lines = lns.Lines()
         prevsegmentnodes = None
         for key in nodes.keys():
@@ -235,7 +248,15 @@ class LinesCreator:
                 if line.firstu == v:
                     return line
         return None
-
+    
+    def __getincomingline(self, lines: dict, firstu):
+        for key in lines.keys():
+            line = lines[key]
+            if line.lastv is not None:
+                if line.lastv == firstu:
+                    return line
+        return None
+    
     def __buildForwardAndBackwardConnectionsFromGraph(self, graphroadnetwork):
         line_data_initializerloc = line_data_initializer.line_data_initializer()
         initializedlines: dict = line_data_initializerloc.initializelines(graphroadnetwork)

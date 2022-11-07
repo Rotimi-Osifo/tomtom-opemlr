@@ -89,9 +89,50 @@ class FeatureCollectionData:
         endnode = nodes[segmentline.endNodeId]
         endNodeFeature = self.__nodeFeatureFromNode(endnode)
         self.all_features.append(endNodeFeature)
+    
+    def createCollectionsFromGraphLines(self, lines: Lines.Lines, nodes: Nodes.Nodes):
+       #geometryData = gData.GeometryData()
 
-    def createCollectionsFromGraphLines(self, lines: dict, nodes: dict):
-        geometryData = gData.GeometryData()
+       for key in nodes.keys():
+           segmentnodes: list = nodes[key]
+           for node in segmentnodes:
+               n: Node.Node = node
+               n.printnode()
+               feature = self.__nodeFeatureFromNode(n)
+               self.all_features.append(feature)
+
+       for roadId in lines.keys():
+           line = lines[roadId] #short lines between successive coordinates
+
+           line_feature = {
+               "type": "Feature",
+               "properties": {
+                   "id": int(roadId),
+                   "direction": int(line.direction),
+                   "endId": line.endNodeId,
+                   "startId": line.startNodeId,
+                   "length": int(line.length),
+                   "frc": line.frc,
+                   "fow": line.fow
+               },
+               "geometry": line.geometry,
+               "id": "link-" + str(line.roadId)
+           }
+           self.all_features.append(line_feature)
+           self.lines_features.append(line_feature)
+           self.roads.append(str(line.roadId))
+
+       self.all_collection = FeatureCollection(self.all_features)
+       self.lines_collection = FeatureCollection(self.lines_features)
+
+       #print(self.all_collection)
+       #data_path = "../../../data/"
+       #self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
+       #self.writeCollection(data_path + "one_way_E6_map_graph_json.json", self.all_collection)
+       
+       
+    def buildCollectionsFromGraphLines(self, lines: dict, nodes: dict):
+        #geometryData = gData.GeometryData()
 
         for key in nodes.keys():
             segmentnodesdict: dict = nodes[key]
