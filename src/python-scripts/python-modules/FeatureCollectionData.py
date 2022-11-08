@@ -12,7 +12,6 @@ import constant_data as cData
 import GeometryData as gData
 import Nodes
 import Lines
-import Line
 import Node
 
 class FeatureCollectionData:
