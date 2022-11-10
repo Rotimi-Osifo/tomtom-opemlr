@@ -131,6 +131,25 @@ def findCloseNeighBoursFromRoadNetwork(geometryData, roadNetwork, target_search_
                         findCloseNeighBoursFromRoadNetwork(geometryData, roadNetwork, target_search_network, nextOrPreviousId, idList)
     return idList
 
+def getCloseNeighBoursFromRoadNetwork(geometryData, roadNetwork, target_search_network, startIdList, idList):
+    geometry_type = geometryData.geometry_types[0]
+    print(idList)
+    loopstop = len(roadNetwork)
+    if len(idList) <= loopstop:
+
+        for this_id in startIdList:
+            if idList.count(this_id) == 0:
+                idList.append(this_id)
+                gdf = target_search_network[target_search_network['id'] == this_id]
+                for road in gdf.itertuples():
+                    this_geom = geometryData.get_line_string(road.geometry)
+                    these_coordinates = geometryData.getCoordinates(this_geom, geometry_type)
+                    nextOrPreviousId = findNextNeighBour(this_id, these_coordinates, geometryData, target_search_network)
+
+                    if len(nextOrPreviousId) >= 1:
+                        findCloseNeighBoursFromRoadNetwork(geometryData, roadNetwork, target_search_network, nextOrPreviousId, idList)
+    return idList
+
 def findNeighBoursFromNetwork(geometryData, roadNetwork,  target_search_network):
     neighbours_container = dict()
     idList = list()

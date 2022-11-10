@@ -10,6 +10,7 @@ import startdata
 
 
 class RoadNetworkManager:
+
     def __init__(self):
         self.mapAsfeaturesCollection = None
         self.featurecollectiondata = None
@@ -20,13 +21,13 @@ class RoadNetworkManager:
     def getstartdata(self):
         startdatalist = list()
 
-        startdatalistloc = startdata.startdata(4040302, 1)
+        startdatalistloc = startdata.Startdata(4040302, 1)
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.startdata(284402024, 2)
+        startdatalistloc = startdata.Startdata(284402024, 2)
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.startdata(237772646, 1)
+        startdatalistloc = startdata.Startdata(237772646, 1)
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.startdata(237772647, 2)
+        startdatalistloc = startdata.Startdata(237772647, 2)
         startdatalist.append(startdatalistloc)
 
         return startdatalist
