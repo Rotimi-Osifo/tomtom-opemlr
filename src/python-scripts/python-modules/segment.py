@@ -6,3 +6,5 @@ class segment:
         self.maxspeed = None
         self.id = None
         self.travel_time = None
+        self.incoming = None
+        self.outging = None

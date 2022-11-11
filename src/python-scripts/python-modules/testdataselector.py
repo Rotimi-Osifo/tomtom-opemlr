@@ -57,6 +57,7 @@ class TestDataSelector:
         dist = 0
         prev = [0.0, 0, 0]
 
+        delta = timedelta(seconds=8)
         for roadid in idsList:
             gdf = graphnetwork[graphnetwork['id'].isin([roadid])]
             coords_list = list()
@@ -66,9 +67,9 @@ class TestDataSelector:
                 dist = dist + road.length
                 speed_m_per_secs = (1000.0 * road.maxspeed) / 3600
                 travel_time = (dist / speed_m_per_secs)
-                delta = timedelta(seconds=travel_time)
 
-                timestamp = (timestamp + delta)
+
+
 
                 geom_str = str(road.geometry)
                 geometry = shwkt.loads(geom_str)
@@ -84,13 +85,15 @@ class TestDataSelector:
                 prev = coord
 
             idx = 0
-            print(road.id, " ", delta, " ", travel_time, " ", speed_m_per_secs, " ", road.length, " ", dist, " ", timestamp)
+
             for coord in reduced_coords_list:
-                t =  time_list[idx]
+                timestamp = (timestamp + delta)
+                print(road.id, " ", delta, " ", travel_time, " ", speed_m_per_secs, " ", road.length, " ", dist, " ",
+                      timestamp)
                 point = "POINT(" + str(coord[0]) + " " + str(coord[1]) + ")"
                 datapoint = {
                     "point": point,
-                    "time": t.strftime("%Y-%m-%d %H:%M:%S%Z") + "+0000",
+                    "time": timestamp.strftime("%Y-%m-%d %H:%M:%S%Z") + "+0000",
                     "id": "\\x0001"
                 }
                 lines_as_single.append(datapoint)

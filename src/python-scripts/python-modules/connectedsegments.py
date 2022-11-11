@@ -30,6 +30,8 @@ class connectedsegments:
 
                 self.segments.append(seg)
 
+    def build_connected_segments(self, graphnetwork):
+        pass
 
 
 
