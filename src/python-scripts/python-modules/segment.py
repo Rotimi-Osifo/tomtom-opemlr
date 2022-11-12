@@ -7,7 +7,9 @@ class segment:
         self.id = None
         self.travel_time = None
         self.incoming = None
-        self.outging = None
+        self.outgoing = None
         self.geometry = None
         self.lastv = None
         self.firstu = None
+        self.length = None
+        self.nodes = None

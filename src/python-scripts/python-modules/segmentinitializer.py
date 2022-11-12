@@ -1,62 +1,67 @@
-import GeometryData as gData
 from geojson import LineString
 import shapely.wkt as shwkt
-from typing import TypedDict
+
+import GeometryData as gData
+import Node
+import Nodes
+import CummulativeDistanceAndTime
 
 import segment
 
-class segmentdictionarytype(TypedDict):
-    roadid: segment.segment
 
 class segmentinitializer:
 
     def __init__(self):
-        self.initialized_segments:segmentdictionarytype
+        self.initialized_segments = dict()
 
-    def __get_last_v(self, gdf):
+    def __get_last_v(self, gdf): # uses graph functionality in the graph network
         last_v = None
         for seg in gdf.itertuples():
             last_v = seg.v
         return last_v
 
-    def __get_first_u(self, gdf):
+    def __get_first_u(self, gdf): # uses graph functionality in the graph network
         for seg in gdf.itertuples():
             return seg.u
 
-    def __getincomingline(self, graphnetwork, lastv):
+    def __getincomingline(self, graphnetwork, firstu): # uses graph functionality in the graph network
         for road in graphnetwork.itertuples():
-            #gdf = graphnetwork[graphnetwork['u'].isin([lastv])]
-            if road.u == lastv:
+            if road.v == firstu: # firstu of the current segment
                 return road.id
         return None
 
-    def __getoutgoingline(self, lines: dict, firstu):
-        for key in lines.keys():
-            line = lines[key]
-            if line.lastv is not None:
-                if line.lastv == firstu:
-                    return line
+    def __getoutgoingline(self, graphnetwork, lastv): # uses graph functionality in the graph network
+        for road in graphnetwork.itertuples():
+            if road.u == lastv: # lastv of the current segment
+                return road.id
         return None
 
-    def initialize_segments(self, graphnetwork):
+    def initialize_segments(self, graphnetwork): # uses graph functionality in the graph network
         geometrydata = gData.GeometryData()
         for road in graphnetwork.itertuples():
             seg = segment.segment()
 
-            gdf = graphnetwork[graphnetwork['id'].isin([road.id])]
+            gdf = graphnetwork[graphnetwork['id'].isin([road.id])] # data for a single line segment as a gdf
             coords_list = list()
+            length = 0
+            nodes:Nodes = Nodes.Nodes()
             for roadloc in gdf.itertuples():
                 geom_str = str(roadloc.geometry)
                 geometry = shwkt.loads(geom_str)
                 geom = geometry.coords
-                prev = [0.0, 0, 0]
+                length = length + (roadloc.length)
 
                 for point in geom:
                     coords_list.append((point[0], point[1]))
 
             reduced_coords_list = list()
+            prev = [0.0, 0, 0]
             for coord in coords_list:
                 if not geometrydata.pointsAreEqual(coord, prev):
+                    node = Node.Node()
+                    node.setRoadId(road.id)
+                    node.setCoordinate(coord)
+                    nodes.addToNodes(node)
                     reduced_coords_list.append(coord)
                 prev = coord
 
@@ -64,4 +69,10 @@ class segmentinitializer:
             seg.geometry= linegeom
             seg.lastv = self.__get_last_v(gdf)
             seg.firstu = self.__get_first_u(gdf)
-            seg.outging = self.__getoutgoingline(graphnetwork, seg.lastv)
+            seg.outgoing = self.__getoutgoingline(graphnetwork, seg.lastv) # incoming segment to the current
+            seg.incoming = self.__getincomingline(graphnetwork, seg.firstu) # out going segment from the current
+            seg.length = length
+            seg.id = road.id
+            seg.nodes = nodes
+            seg.maxspeed = CummulativeDistanceAndTime.road_class_to_kmph(road.highway)
+            self.initialized_segments[road.id] = seg
