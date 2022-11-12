@@ -1,5 +1,5 @@
 class segment:
-    def __int__(self):
+    def __init__(self):
         self.start = None
         self.end = None
         self.cumDist = None
@@ -8,3 +8,6 @@ class segment:
         self.travel_time = None
         self.incoming = None
         self.outging = None
+        self.geometry = None
+        self.lastv = None
+        self.firstu = None

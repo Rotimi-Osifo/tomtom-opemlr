@@ -1,3 +1,7 @@
+import segmentinitializer
+import segment
+
+
 class neighboursearch:
 
     def __init__(self):
@@ -61,3 +65,17 @@ class neighboursearch:
                 u = self.__get_last_v(gdf)
                 self.__traverse_path(edges, u)
         return self.connectedsegments
+
+    def allsegmentsareconntected(self, initializedsegments: dict) -> bool:
+        for key in initializedsegments.keys():
+            seg: segment.segment = initializedsegments[key]
+            if seg.outging is None:
+                return False
+        return True
+    def getCloseNeighBoursFromNetwork(self, graphnetwork):
+        segment_initializer = segmentinitializer.segmentinitializer()
+        segment_initializer.initialize_segments(graphnetwork)
+        if not self.getCloseNeighBoursFromNetwork(segment_initializer.initialized_segments):
+            for road in graphnetwork.itertuples():
+                gdf = graphnetwork[graphnetwork['id'].isin([road.id])]
+                #segment_initializer.initialized_segments[road.id].
