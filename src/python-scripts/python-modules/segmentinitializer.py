@@ -38,6 +38,7 @@ class segmentinitializer:
 
     def initialize_segments(self, graphnetwork): # uses graph functionality in the graph network
         geometrydata = gData.GeometryData()
+        cnt = 0
         for road in graphnetwork.itertuples():
             seg = segment.segment()
 
@@ -45,6 +46,8 @@ class segmentinitializer:
             coords_list = list()
             length = 0
             nodes:Nodes = Nodes.Nodes()
+            cnt = cnt + 1
+            print("current id-: ", road.id, ", cnt-: ", cnt)
             for roadloc in gdf.itertuples():
                 geom_str = str(roadloc.geometry)
                 geometry = shwkt.loads(geom_str)
@@ -61,7 +64,7 @@ class segmentinitializer:
                     node = Node.Node()
                     node.setRoadId(road.id)
                     node.setCoordinate(coord)
-                    nodes.addToNodes(node)
+                    nodes.addToNodes(node, road.id)
                     reduced_coords_list.append(coord)
                 prev = coord
 
@@ -75,4 +78,5 @@ class segmentinitializer:
             seg.id = road.id
             seg.nodes = nodes
             seg.maxspeed = CummulativeDistanceAndTime.road_class_to_kmph(road.highway)
+            print("incoming line id-: ", seg.incoming, ", current line id-: ", seg.id, ", out going line id-:  ", seg.outgoing, ", length-: ", seg.length)
             self.initialized_segments[road.id] = seg
