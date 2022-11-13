@@ -13,3 +13,4 @@ class segment:
         self.firstu = None
         self.length = None
         self.nodes = None
+        self.direction = None
