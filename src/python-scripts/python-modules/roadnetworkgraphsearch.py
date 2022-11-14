@@ -11,18 +11,18 @@ class roadnetworkgraphsearch:
 
 
     def __getstartdata(self):
-        startdatalist = list()
+        self.startdatalist = list()
 
-        startdatalistloc = startdata.Startdata(4040302, 1, "map_data_as_geojson_" + str(4040302) + ".geojson")
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(284402024, 2, "map_data_as_geojson_" + str(284402024) + ".geojson")
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(237772646, 1, "map_data_as_geojson_" + str(237772646) + ".geojson")
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(237772647, 2, "map_data_as_geojson_" + str(237772647) + ".geojson")
-        startdatalist.append(startdatalistloc)
+        startdataloc = startdata.Startdata(4040302, 1, "map_data_as_geojson_" + str(4040302))
+        self.startdatalist.append(startdataloc)
+        startdataloc = startdata.Startdata(284402024, 2, "map_data_as_geojson_" + str(284402024))
+        self.startdatalist.append(startdataloc)
+        startdataloc = startdata.Startdata(237772646, 1, "map_data_as_geojson_" + str(237772646))
+        self.startdatalist.append(startdataloc)
+        self.startdataloc = startdata.Startdata(237772647, 2, "map_data_as_geojson_" + str(237772647))
+        self.startdatalist.append(startdataloc)
 
-        return startdatalist
+        return self.startdatalist
 
     def __buildconnectedsegments(self, segments_, startid, lanedirection):
         if self.visitedset.count(startid) == 0:
@@ -42,7 +42,7 @@ class roadnetworkgraphsearch:
         segment_initializer = segmentinitializer.segmentinitializer()
         segment_initializer.initialize_segments(graphnetwork)
         self.segments = segment_initializer.initialized_segments
-        self.startdatalist = self.__getstartdata()
+        self.__getstartdata()
         for startdataloc in self.startdatalist:
             self.visitedset = list()
             self.__buildconnectedsegments(self.segments, startdataloc.roadid, startdataloc.lanedirection)

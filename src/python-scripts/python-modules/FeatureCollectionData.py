@@ -13,6 +13,9 @@ import GeometryData as gData
 import Nodes
 import Lines
 import Node
+import segment
+import Node as nd
+
 
 class FeatureCollectionData:
     def __init__(self):
@@ -172,37 +175,34 @@ class FeatureCollectionData:
         #self.writeCollection(data_path + "one_way_E6_map_graph.geojson", self.all_collection)
         #self.writeCollection(data_path + "one_way_E6_map_graph_json.json", self.all_collection)
 
-    def createCollectionsFromConnectedSegments(self, lines: Lines.Lines, nodes: Nodes.Nodes, idlist):
-        geometryData = gData.GeometryData()
-
-        for roadid in idlist:
-            segmentnodes: list = nodes[roadid]
-            for node in segmentnodes:
+    def createCollectionsFromConnectedSegments(self, visitedset: list, initializedsegments: dict):
+        for roadid in visitedset:
+            initializedsegment: segment.segment = initializedsegments[roadid]
+            nodeslist: list = initializedsegment.nodes.nodeslist
+            for node in nodeslist:
                 n: Node.Node = node
-                n.printnode()
                 feature = self.__nodeFeatureFromNode(n)
                 self.all_features.append(feature)
 
-        for roadId in idlist:
-            line = lines[roadId] #short lines between successive coordinates
-
+        for roadid in visitedset:
+            initializedsegment: segment.segment = initializedsegments[roadid]
             line_feature = {
                 "type": "Feature",
                 "properties": {
-                    "id": int(roadId),
-                    "direction": int(line.direction),
-                    "endId": line.endNodeId,
-                    "startId": line.startNodeId,
-                    "length": int(line.length),
-                    "frc": line.frc,
-                    "fow": line.fow
+                    "id": int(initializedsegment.id),
+                    "direction": int(initializedsegment.direction),
+                    "endId": initializedsegment.end,
+                    "startId": initializedsegment.start,
+                    "length": int(initializedsegment.length),
+                    "frc": initializedsegment.frc,
+                    "fow": initializedsegment.fow
                 },
-                "geometry": line.geometry,
-                "id": "link-" + str(line.roadId)
+                "geometry": initializedsegment.geometry,
+                "id": "link-" + str(initializedsegment.id)
             }
             self.all_features.append(line_feature)
             self.lines_features.append(line_feature)
-            self.roads.append(str(line.roadId))
+            self.roads.append(str(initializedsegment.id))
 
         self.all_collection = FeatureCollection(self.all_features)
         self.lines_collection = FeatureCollection(self.lines_features)
