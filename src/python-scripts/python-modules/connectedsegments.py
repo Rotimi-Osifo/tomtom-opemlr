@@ -1,6 +1,8 @@
 import segment
 import shapely.wkt
 
+import Node as nd
+
 class connectedsegments:
     def __init__(self):
         self.segments = list()
@@ -30,8 +32,43 @@ class connectedsegments:
 
                 self.segments.append(seg)
 
-    def build_connected_segments(self, graphnetwork):
-        pass
+    def get_last_node(self, nodeslist: list) -> nd.Node:
+        nodeloc: nd.Node = None
+        for node in nodeslist:
+            nodeloc = node
+        return nodeloc
+
+    def build_connected_segments(self, datastorforvisitedsets: dict, initializedsegments: dict):
+        for key in datastorforvisitedsets.keys():
+            visitedset: list = datastorforvisitedsets[key]
+            for roadid in visitedset:
+                initializedsegment: segment.segment = initializedsegments[roadid]
+                nodeslist: list = initializedsegment.nodes.nodeslist
+                incomingid = initializedsegment.incoming
+                if incomingid != None:
+                    incomingseg: segment.segment = initializedsegments[incomingid]
+                    lastnode:nd.Node = self.get_last_node(incomingseg.nodes.nodeslist)
+                    node_cnt = lastnode.nodeId
+                    initializedsegment.nodeslist.append(lastnode)
+                    initializedsegment.start = lastnode.nodeId
+                    endnode:nd.Node = None
+                    for node in nodeslist:
+                        node.setNodeId(node_cnt)
+                        node_cnt = node_cnt + 1
+                        endnode = node
+                    initializedsegment.end = endnode.nodeId
+                    initializedsegment.nodeslist.append(endnode)
+                    initializedsegments[roadid] = initializedsegment
+                    initializedsegment.printsegment()
+                else:
+                    lastnode: nd.Node = self.get_last_node(initializedsegment.nodes.nodeslist)
+                    firstnode:nd.Node = initializedsegment.nodes.nodeslist[0]
+                    initializedsegment.nodeslist.append(firstnode)
+                    initializedsegment.nodeslist.append(lastnode)
+                    initializedsegment.start = firstnode.nodeId
+                    initializedsegment.end = lastnode.nodeId
+                    initializedsegment.printsegment()
+
 
 
 

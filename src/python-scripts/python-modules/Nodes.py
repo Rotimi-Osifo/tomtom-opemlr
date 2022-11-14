@@ -3,9 +3,13 @@ import GeometryData as gData
 class Nodes:
     def __init__(self):
         self.nodes = dict()
+        self.nodeslist = list()
 
     def addToNodes(self, node, roadid):
         self.nodes[roadid] = node
+
+    def addToNodesList(self, node):
+        self.nodeslist.append(node)
 
     def printnodes(self):
         print("printing nodes")
