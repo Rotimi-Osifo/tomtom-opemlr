@@ -23,13 +23,13 @@ class RoadNetworkManager:
     def getstartdata(self):
         startdatalist = list()
 
-        startdatalistloc = startdata.Startdata(4040302, 1)
+        startdatalistloc = startdata.Startdata(4040302, 1, "one_way_E6_map_graph")
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(284402024, 2)
+        startdatalistloc = startdata.Startdata(284402024, 2, "one_way_E6_map_graph")
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(237772646, 1)
+        startdatalistloc = startdata.Startdata(237772646, 1, "one_way_E6_map_graph")
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(237772647, 2)
+        startdatalistloc = startdata.Startdata(117090882, 2, "one_way_E6_map_graph")
         startdatalist.append(startdatalistloc)
 
         return startdatalist
