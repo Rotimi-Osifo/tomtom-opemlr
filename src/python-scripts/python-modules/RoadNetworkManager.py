@@ -195,6 +195,8 @@ class RoadNetworkManager:
             featurecollectiondata.writeCollection(data_path + startdataloc.mapfilename + ".geojson", featurecollectiondata.all_collection)
             featurecollectiondata.writeCollection(data_path + startdataloc.mapfilename + ".json", featurecollectiondata.all_collection)
 
+        return roadnetwork_graphsearch
+
 
 
 
