@@ -189,13 +189,13 @@ class FeatureCollectionData:
             line_feature = {
                 "type": "Feature",
                 "properties": {
+                    "endId": int(initializedsegment.end),
+                    "startId": int(initializedsegment.start),
+                    "frc": int(initializedsegment.frc),
+                    "length": int(initializedsegment.length),
                     "id": int(initializedsegment.id),
                     "direction": int(initializedsegment.direction),
-                    "endId": initializedsegment.end,
-                    "startId": initializedsegment.start,
-                    "length": int(initializedsegment.length),
-                    "frc": initializedsegment.frc,
-                    "fow": initializedsegment.fow
+                    "fow": int(initializedsegment.fow)
                 },
                 "geometry": initializedsegment.geometry,
                 "id": "link-" + str(initializedsegment.id)

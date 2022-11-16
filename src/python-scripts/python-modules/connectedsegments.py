@@ -38,9 +38,24 @@ class connectedsegments:
             nodeloc = node
         return nodeloc
 
+    def __reordernodes(self, initializedsegments: dict, visitedset: list) -> None:
+        node_cnt = 1
+        for roadid in visitedset:
+            initializedsegment: segment.segment = initializedsegments[roadid]
+            nodeslist: list = initializedsegment.nodes.nodeslist
+            reorderednodes = list()
+            for node in nodeslist:
+                node.setNodeId(node_cnt)
+                reorderednodes.append(node)
+                node_cnt = node_cnt + 1
+            initializedsegment.nodes.nodeslist = reorderednodes
+            initializedsegments[roadid] = initializedsegment
+
+
     def build_connected_segments(self, datastorforvisitedsets: dict, initializedsegments: dict):
         for key in datastorforvisitedsets.keys():
             visitedset: list = datastorforvisitedsets[key]
+            self.__reordernodes(initializedsegments, visitedset)
             for roadid in visitedset:
                 initializedsegment: segment.segment = initializedsegments[roadid]
                 nodeslist: list = initializedsegment.nodes.nodeslist
@@ -48,10 +63,11 @@ class connectedsegments:
                 if incomingid != None:
                     incomingseg: segment.segment = initializedsegments[incomingid]
                     lastnode:nd.Node = self.get_last_node(incomingseg.nodes.nodeslist)
-                    node_cnt = lastnode.nodeId
+
                     initializedsegment.nodeslist.append(lastnode)
                     initializedsegment.start = lastnode.nodeId
                     endnode:nd.Node = None
+                    node_cnt = lastnode.nodeId
                     for node in nodeslist:
                         node.setNodeId(node_cnt)
                         node_cnt = node_cnt + 1

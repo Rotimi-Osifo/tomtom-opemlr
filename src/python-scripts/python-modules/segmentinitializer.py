@@ -57,7 +57,7 @@ class segmentinitializer:
                     length = length + (roadloc.length)
 
                     for point in geom:
-                        coords_list.append((point[0], point[1]))
+                        coords_list.append((float(point[0]), float(point[1])))
 
                 reduced_coords_list = list()
                 prev = [0.0, 0, 0]

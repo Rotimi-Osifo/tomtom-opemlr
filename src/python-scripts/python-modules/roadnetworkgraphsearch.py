@@ -4,7 +4,7 @@ import segmentinitializer
 import startdata
 class roadnetworkgraphsearch:
     def __init__(self):
-        self.visitedset = None #list()
+        self.visitedset = None
         self.datastore = dict()
         self.segments = None
         self.startdatalist = None
@@ -26,16 +26,20 @@ class roadnetworkgraphsearch:
 
     def __buildconnectedsegments(self, segments_, startid, lanedirection):
         if self.visitedset.count(startid) == 0:
-            self.visitedset.append(startid)
-            seg:segment.segment = segments_[startid]
-            seg.direction = lanedirection
-            segments_[startid] = seg #updating with direction
-            if seg.outgoing is not None:
-                self.__buildconnectedsegments(segments_, seg.outgoing, lanedirection)
-            else:
-                return self.visitedset
+            try:
+                seg:segment.segment = segments_[startid]
+                seg.direction = lanedirection
+                segments_[startid] = seg  # updating with direction
+                self.visitedset.append(startid)
+                if seg.outgoing is not None:
+                    self.__buildconnectedsegments(segments_, seg.outgoing, lanedirection)
+                else:
+                    return self.visitedset
+            except KeyError:
+                print("the key-: ", startid, " is not in the dictionary!")
         else:
             return self.visitedset
+
 
     def buildconnectedsegments(self, graphnetwork):
 
