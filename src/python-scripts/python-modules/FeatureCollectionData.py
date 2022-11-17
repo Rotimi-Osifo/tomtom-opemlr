@@ -4,6 +4,9 @@ Created on Tue Oct 25 15:50:43 2022
 
 @author: OOSIFO
 """
+
+import os
+
 from geojson import FeatureCollection
 import shapely.wkt
 import json
@@ -359,6 +362,11 @@ class FeatureCollectionData:
             self.roads.append(str(road.id))
     
     def writeCollection(self, file_root_path, collection):
+        try:
+            os.remove(file_root_path)
+        except OSError:
+            print("Error removing file with file name-: ", file_root_path)
+
         self.__dumpToFile(file_root_path, collection)
             
     def writeLineFeatures(self, file_root_path):
