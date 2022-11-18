@@ -27,6 +27,8 @@ class roadnetworkgraphsearch:
         self.startdatalist.append(startdataloc)
         startdataloc = startdata.Startdata(4040439, 2, "map_data_as_geojson_" + str(4040439))
         self.startdatalist.append(startdataloc)
+        startdataloc = startdata.Startdata(222217364, 2, "map_data_as_geojson_" + str(222217364))
+        self.startdatalist.append(startdataloc)
 
         return self.startdatalist
 
