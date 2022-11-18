@@ -183,13 +183,13 @@ class RoadNetworkManager:
         roadnetwork_graphsearch.buildconnectedsegments(graphroadnetwork)
 
         connected_segments = connectedsegments.connectedsegments()
-        connected_segments.build_connected_segments(roadnetwork_graphsearch.datastore, roadnetwork_graphsearch.segments)
+        re_initializedsegments = connected_segments.build_connected_segments(roadnetwork_graphsearch.datastore, roadnetwork_graphsearch.segments)
 
         for startdataloc in roadnetwork_graphsearch.startdatalist:
             visitedset: list = roadnetwork_graphsearch.datastore[startdataloc.roadid]
 
             featurecollectiondata = fcData.FeatureCollectionData()
-            featurecollectiondata.createCollectionsFromConnectedSegments(visitedset, roadnetwork_graphsearch.segments)
+            featurecollectiondata.createCollectionsFromConnectedSegments(visitedset,  re_initializedsegments)
 
             data_path = "../../../data/"
             featurecollectiondata.writeCollection(data_path + startdataloc.mapfilename + ".geojson", featurecollectiondata.all_collection)

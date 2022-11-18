@@ -50,18 +50,35 @@ class connectedsegments:
                 node_cnt = node_cnt + 1
             initializedsegment.nodes.nodeslist = reorderednodes
             initializedsegments[roadid] = initializedsegment
+        return initializedsegments
 
-
-    def build_connected_segments(self, datastorforvisitedsets: dict, initializedsegments: dict):
+    def __reordernodesext(self, datastorforvisitedsets: dict, initializedsegments: dict) -> dict:
         for key in datastorforvisitedsets.keys():
             visitedset: list = datastorforvisitedsets[key]
-            self.__reordernodes(initializedsegments, visitedset)
+            node_cnt = 1
             for roadid in visitedset:
                 initializedsegment: segment.segment = initializedsegments[roadid]
                 nodeslist: list = initializedsegment.nodes.nodeslist
+                reorderednodes = list()
+                for node in nodeslist:
+                    node.setNodeId(node_cnt)
+                    reorderednodes.append(node)
+                    node_cnt = node_cnt + 1
+                initializedsegment.nodes.nodeslist = reorderednodes
+                initializedsegments[roadid] = initializedsegment
+        return initializedsegments
+
+
+    def build_connected_segments(self, datastorforvisitedsets: dict, initializedsegments: dict):
+        re_initializedsegments = self.__reordernodesext(datastorforvisitedsets, initializedsegments)
+        for key in datastorforvisitedsets.keys():
+            visitedset: list = datastorforvisitedsets[key]
+            for roadid in visitedset:
+                initializedsegment: segment.segment = re_initializedsegments[roadid]
+                nodeslist: list = initializedsegment.nodes.nodeslist
                 incomingid = initializedsegment.incoming
-                if incomingid != None:
-                    incomingseg: segment.segment = initializedsegments[incomingid]
+                if incomingid is not None and roadid != key:
+                    incomingseg: segment.segment = re_initializedsegments[incomingid]
                     lastnode:nd.Node = self.get_last_node(incomingseg.nodes.nodeslist)
 
                     initializedsegment.nodeslist.append(lastnode)
@@ -74,16 +91,20 @@ class connectedsegments:
                         endnode = node
                     initializedsegment.end = endnode.nodeId
                     initializedsegment.nodeslist.append(endnode)
-                    initializedsegments[roadid] = initializedsegment
+                    re_initializedsegments[roadid] = initializedsegment
                     initializedsegment.printsegment()
                 else:
+                    firstnode: nd.Node = initializedsegment.nodes.nodeslist[0]
+
                     lastnode: nd.Node = self.get_last_node(initializedsegment.nodes.nodeslist)
-                    firstnode:nd.Node = initializedsegment.nodes.nodeslist[0]
+
                     initializedsegment.nodeslist.append(firstnode)
                     initializedsegment.nodeslist.append(lastnode)
                     initializedsegment.start = firstnode.nodeId
                     initializedsegment.end = lastnode.nodeId
+                    re_initializedsegments[roadid] = initializedsegment
                     initializedsegment.printsegment()
+        return  re_initializedsegments
 
 
 
