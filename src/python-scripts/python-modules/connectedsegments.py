@@ -76,8 +76,9 @@ class connectedsegments:
             for roadid in visitedset:
                 initializedsegment: segment.segment = re_initializedsegments[roadid]
                 nodeslist: list = initializedsegment.nodes.nodeslist
-                incomingid = initializedsegment.incoming
-                if incomingid is not None and roadid != key:
+                incomingids = initializedsegment.incoming
+                if len(incomingids) >= 1 and roadid != key:
+                    incomingid = incomingids[0]
                     incomingseg: segment.segment = re_initializedsegments[incomingid]
                     lastnode:nd.Node = self.get_last_node(incomingseg.nodes.nodeslist)
 

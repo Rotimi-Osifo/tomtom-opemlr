@@ -27,7 +27,17 @@ class FeatureCollectionData:
         self.roads = list()
         self.lines_collection = None
         self.all_collection = None
-    
+
+    def __isduplicatenode(self, fid:int):
+        for feature in self.all_features:
+            geom = feature["geometry"]
+            geomtype = geom["type"]
+            if geomtype == "Point":
+                props = feature["properties"]
+                featureid:int = props["id"]
+                if fid == featureid:
+                    return True
+        return False
 
     def __nodeFeatureFromNode(self, node: Node.Node):
         coordinates = node.coordinate
@@ -57,8 +67,9 @@ class FeatureCollectionData:
             nodes = line.nodes
 
             for node in nodes:
-                nodeFeature = self.__nodeFeatureFromNode(node)
-                self.all_features.append(nodeFeature) #nodes
+                if not self.__isduplicatenode(node.nodeId):
+                    nodeFeature = self.__nodeFeatureFromNode(node)
+                    self.all_features.append(nodeFeature) #nodes
     
             line_feature = {
                     "type": "Feature",
@@ -184,8 +195,9 @@ class FeatureCollectionData:
             nodeslist: list = initializedsegment.nodes.nodeslist
             for node in nodeslist:
                 n: Node.Node = node
-                feature = self.__nodeFeatureFromNode(n)
-                self.all_features.append(feature)
+                if not self.__isduplicatenode(node.nodeId):
+                    nodeFeature = self.__nodeFeatureFromNode(n)
+                    self.all_features.append(nodeFeature)  # nodes
 
         for roadid in visitedset:
             initializedsegment: segment.segment = initializedsegments[roadid]
