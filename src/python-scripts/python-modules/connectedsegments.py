@@ -32,6 +32,34 @@ class connectedsegments:
 
                 self.segments.append(seg)
 
+    def __getallincoming(self, initializedsegments, currentsegmentid):
+        initializedsegment: segment.segment = initializedsegments[ currentsegmentid]
+        incomingsegments: list = initializedsegment.incoming
+        allincoming = list()
+        while incomingsegments is not None:
+            for currentsegmentidloc in incomingsegments:
+                allincoming.append(currentsegmentidloc)
+                currentsegmentid = currentsegmentidloc
+            initializedsegment: segment.segment = initializedsegments[currentsegmentid]
+            incomingsegments: list = initializedsegment.incoming
+        return allincoming.reverse()
+
+    def __getallincomingext(self, initializedsegments, currentsegmentid, allincoming: list):
+        try:
+            initializedsegment: segment.segment = initializedsegments[ currentsegmentid]
+            incomingsegments: list = initializedsegment.incoming
+
+            if incomingsegments is not None and len(incomingsegments) >= 1:
+                for currentsegmentidloc in incomingsegments:
+                    allincoming.append(currentsegmentidloc)
+                    self.__getallincomingext(initializedsegments, currentsegmentidloc, allincoming)
+            allincoming.reverse()
+            return allincoming
+        except:
+            print("the key-: ", currentsegmentid, " is not in the dictionary!")
+
+
+
     def get_last_node(self, nodeslist: list) -> nd.Node:
         nodeloc: nd.Node = None
         for node in nodeslist:
@@ -54,11 +82,26 @@ class connectedsegments:
 
     def __reordernodesext(self, datastorforvisitedsets: dict, initializedsegments: dict) -> dict:
         for key in datastorforvisitedsets.keys():
+            allincoming = list()
+            allincoming = self.__getallincomingext(initializedsegments, key, allincoming)
             visitedset: list = datastorforvisitedsets[key]
             node_cnt = 1
             for roadid in visitedset:
                 initializedsegment: segment.segment = initializedsegments[roadid]
                 nodeslist: list = initializedsegment.nodes.nodeslist
+
+                if allincoming is not None and len(allincoming) >= 1:
+                    for incomingsegment in allincoming:
+                        initializedincomingsegment: segment.segment = initializedsegments[incomingsegment]
+                        nodeslistloc: list = initializedincomingsegment.nodes.nodeslist
+                        reorderednodesloc = list()
+                        for node in nodeslistloc:
+                            node.setNodeId(node_cnt)
+                            reorderednodesloc.append(node)
+                            node_cnt = node_cnt + 1
+                        initializedincomingsegment.nodes.nodeslist = reorderednodesloc
+                        initializedsegments[incomingsegment] = initializedincomingsegment
+
                 reorderednodes = list()
                 for node in nodeslist:
                     node.setNodeId(node_cnt)
