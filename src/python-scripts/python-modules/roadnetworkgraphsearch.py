@@ -1,6 +1,6 @@
 import segment
 import graphprocessor
-#import utilities
+import graphfunctions
 
 import startdata
 class roadnetworkgraphsearch:
@@ -59,14 +59,41 @@ class roadnetworkgraphsearch:
             try:
                 seg:segment.segment = segments_[startid]
                 incomingids: list = seg.incoming
-                if len(incomingids) >= 1:
-                    for incomingid in incomingids:
-                        if incomingid is not None:
-                            segincoming:segment.segment = segments_[incomingid]
-                            if self.visitedset.count(incomingid) == 0:
-                                segincoming.direction = lanedirection
-                                segments_[incomingid] = segincoming
-                                self.visitedset.append(incomingid)
+                if len(incomingids) == 1:
+                    incomingid = incomingids[0]
+                    if incomingid is not None:
+                        segincoming:segment.segment = segments_[incomingid]
+                        if self.visitedset.count(incomingid) == 0:
+                            segincoming.direction = lanedirection
+                            #segincoming.incoming = [incomingid]
+                            segments_[incomingid] = segincoming
+                            self.visitedset.append(incomingid)
+                if len(incomingids) == 2:
+                    grapghfxns = graphfunctions.graphfunctions()
+                    firsttracebacklist = list()
+                    grapghfxns.tracebackincoming(segments_, incomingids[0], firsttracebacklist)
+                    print("Trace back-: ", startid, ", ", incomingids[0], " ", len(firsttracebacklist))
+                    secondtracebacklist = list()
+                    grapghfxns.tracebackincoming(segments_, incomingids[1], secondtracebacklist)
+                    print("Trace back-: ", startid, ", ", incomingids[1], " ", len(secondtracebacklist))
+
+                    incomingid = None
+                    if firsttracebacklist is None and secondtracebacklist is not None:
+                        incomingid = incomingids[1]
+                    elif firsttracebacklist is not None and secondtracebacklist is None:
+                        incomingid = incomingids[0]
+                    if firsttracebacklist is not None and secondtracebacklist is not None:
+                        if len(firsttracebacklist) < len(secondtracebacklist):
+                            incomingid = incomingids[1]
+                        else:
+                            incomingid = incomingids[0]
+                    if incomingid is not None:
+                        segincoming: segment.segment = segments_[incomingid]
+                        if self.visitedset.count(incomingid) == 0:
+                            segincoming.direction = lanedirection
+                            #segincoming.incoming = [incomingid]
+                            segments_[incomingid] = segincoming
+                            self.visitedset.append(incomingid)
 
                 seg.direction = lanedirection
                 segments_[startid] = seg  # updating with direction

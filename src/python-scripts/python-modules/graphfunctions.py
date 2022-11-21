@@ -1,5 +1,5 @@
 import geopandas as geopandas
-
+import segment
 
 class graphfunctions:
     def __init__(selfself):
@@ -28,3 +28,31 @@ class graphfunctions:
             if road.u == lastv: # lastv of the current segment
                 idslist.append(road.id)
         return idslist
+
+    def tracebackincoming(self, initializedsegments: dict, currentsegmentid: int, tracebacklist: list):
+
+        initializedsegment: segment.segment = initializedsegments[currentsegmentid]
+        incomingsegments: list = initializedsegment.incoming
+        if incomingsegments is not None and len(incomingsegments) >= 1:
+            for incomingsegment in incomingsegments:
+                initializedsegmentloc: segment.segment = initializedsegments[incomingsegment]
+                incomingsegmentsloc: list = initializedsegmentloc.incoming
+                if incomingsegmentsloc is not None:
+                    tracebacklist.append(incomingsegment)
+                    self.tracebackincoming(initializedsegments, incomingsegment, tracebacklist)
+                # else:
+                # return tracebacklist
+    def getallincomingext(self, initializedsegments: dict, visitedset: list) -> dict:
+        tracebacklistdict = dict()
+        for roadid in visitedset:
+            try:
+                initializedsegment: segment.segment = initializedsegments[roadid]
+                incomingsegments: list = initializedsegment.incoming
+                if incomingsegments is not None and len(incomingsegments) >= 1:
+                    tracebacklist = list()
+                    self.tracebackincoming(initializedsegments, roadid, tracebacklist)
+                    if tracebacklist is not None:
+                        tracebacklistdict[roadid] = tracebacklist
+            except:
+                print("the key-: ", roadid, " is not in the dictionary!")
+        return tracebacklistdict
