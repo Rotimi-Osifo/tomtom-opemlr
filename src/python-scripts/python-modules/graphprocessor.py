@@ -13,9 +13,6 @@ class graphprocessor:
 
     def __init__(self):
         self.preprocessed_segments = dict()
-        self.postprocessed_segments = dict()
-
-
 
     def preprocess(self, graphnetwork): # uses graph functionality in the graph network
         geometrydata = gData.GeometryData()
@@ -23,7 +20,7 @@ class graphprocessor:
         coord_cnt = 0
         prev_roadid = -1
         graphfuncs = graphfxns.graphfunctions()
-
+        cumdistance = 0 # cummulative distance from start of trajectory to the end node of this segment.
         for road in graphnetwork.itertuples():
             if road.id != prev_roadid:
                 seg = segment.segment()
@@ -32,12 +29,13 @@ class graphprocessor:
                 length = 0
                 nodes:Nodes = Nodes.Nodes()
                 cnt = cnt + 1
-                print("current id-: ", road.id, ", cnt-: ", cnt)
+                #print("current id-: ", road.id, ", cnt-: ", cnt)
                 for roadloc in gdf.itertuples():
                     geom_str = str(roadloc.geometry)
                     geometry = shwkt.loads(geom_str)
                     geom = geometry.coords
                     length = length + (roadloc.length)
+                    cumdistance =  cumdistance + (roadloc.length)
 
                     for point in geom:
                         coords_list.append((float(point[0]), float(point[1])))
@@ -54,7 +52,7 @@ class graphprocessor:
                         node.setnodename(int(road.id))
                         nodes.addToNodesList(node)
                         reduced_coords_list.append(coord)
-                        print("current id-: ", road.id, ", cnt-: ", cnt, ", cord_cnt-: ", coord_cnt, ", len(coords_list) -:", len(coords_list))
+                        #print("current id-: ", road.id, ", cnt-: ", cnt, ", cord_cnt-: ", coord_cnt, ", len(coords_list) -:", len(coords_list))
                     prev = coord
 
                 linegeom = LineString(reduced_coords_list)
@@ -64,11 +62,12 @@ class graphprocessor:
                 seg.outgoing = graphfuncs.getoutgoingline(graphnetwork, seg.lastv) # incoming segment to the current
                 seg.incoming = graphfuncs.getincomingline(graphnetwork, seg.firstu) # out going segment from the current
                 seg.length = length
+                seg.cumDist = cumdistance
                 seg.id = road.id
                 seg.nodes = nodes
                 seg.setFow(road.highway)
                 seg.setFrc(road.highway)
                 seg.maxspeed = CummulativeDistanceAndTime.road_class_to_kmph(road.highway)
-                print("incoming line id-: ", seg.incoming, ", current line id-: ", seg.id, ", out going line id-:  ", seg.outgoing, ", length-: ", seg.length)
+                #print("incoming line id-: ", seg.incoming, ", current line id-: ", seg.id, ", out going line id-:  ", seg.outgoing, ", length-: ", seg.length)
                 self.preprocessed_segments[road.id] = seg
                 prev_roadid = road.id

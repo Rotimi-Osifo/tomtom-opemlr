@@ -4,7 +4,7 @@ class segment:
     def __init__(self):
         self.start = None
         self.end = None
-        self.cumDist = None
+        self.cumDist = None # distance from start to this segment
         self.maxspeed = None
         self.id = None
         self.travel_time = None
