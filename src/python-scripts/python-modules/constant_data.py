@@ -57,3 +57,6 @@ highway_fow_mapping = {
         'residential': 3,
         'living_street': 3,
     }
+
+columns_to_drop = ['access', 'area', 'bicycle', 'cycleway', 'foot', 'lit', 'smoothness', \
+                  'sidewalk', 'tags', 'version', 'timestamp', 'psv', 'int_ref']# not needed columns in the dataframe

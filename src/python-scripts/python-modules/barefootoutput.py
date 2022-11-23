@@ -3925,7 +3925,6 @@ barefoot = {
     ],
     "type": "MultiLineString"
 }
-coordinates = barefoot["coordinates"]
 
 barefoot_39887921 = {
     "coordinates": [
@@ -14523,4 +14522,7 @@ barefoot_39887921 = {
     "type": "MultiLineString"
 }
 
+
+coordinates = barefoot["coordinates"]
 coordinates_39887921 = barefoot_39887921["coordinates"]
+barefoot_4040439 = barefoot_4040439["coordinates"]

@@ -47,5 +47,6 @@ json_data = {
         "negativeOffset": 0
     }
 }
+
 locations = json_data['lineLocation']
 shapely_json_lines = locations['lines']

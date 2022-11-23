@@ -27,6 +27,6 @@ class segment:
         self.fow = int(cData.highway_fow_mapping.get(highway, 7))  # deafult case 7
 
     def printsegment(self):
-        print("segment id -:, ", self.id, ", start node -:, ", self.start, ", end -: ", self.end)
+        print("segment id -:, ", self.id, ", start node -:, ", self.start, ", end -: ", self.end, ", direction-: ", self.direction)
         for node in self.nodeslist:
             node.printnode()

@@ -199,8 +199,12 @@ class FeatureCollectionData:
                     nodeFeature = self.__nodeFeatureFromNode(n)
                     self.all_features.append(nodeFeature)  # nodes
 
+        direction = None
         for roadid in visitedset:
             initializedsegment: segment.segment = initializedsegments[roadid]
+            initializedsegment.printsegment()
+            if initializedsegment.direction is not None:
+                direction = initializedsegment.direction
             line_feature = {
                 "type": "Feature",
                 "properties": {
@@ -209,12 +213,14 @@ class FeatureCollectionData:
                     "frc": int(initializedsegment.frc),
                     "length": int(initializedsegment.length),
                     "id": int(initializedsegment.id),
-                    "direction": int(initializedsegment.direction),
+                    "direction": int(direction),
                     "fow": int(initializedsegment.fow)
                 },
                 "geometry": initializedsegment.geometry,
                 "id": "link-" + str(initializedsegment.id)
             }
+            if initializedsegment.direction is not None:
+                direction = initializedsegment.direction
             self.all_features.append(line_feature)
             self.lines_features.append(line_feature)
             self.roads.append(str(initializedsegment.id))

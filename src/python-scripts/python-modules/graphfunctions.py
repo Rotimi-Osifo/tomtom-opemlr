@@ -1,5 +1,6 @@
 import geopandas as geopandas
 import segment
+import Node
 
 class graphfunctions:
     def __init__(selfself):
@@ -56,3 +57,13 @@ class graphfunctions:
             except:
                 print("the key-: ", roadid, " is not in the dictionary!")
         return tracebacklistdict
+
+    def printsegments(self, segments_: dict) -> None:
+        for key in segments_.keys():
+            segment_ = segments_[key]
+            nodes:dict = segment_.nodes.nodes
+            for k in nodes.keys():
+                nodeslist:list = nodes[k]
+                for node in nodeslist:
+                    n:Node.Node = node
+                    n.printnode()

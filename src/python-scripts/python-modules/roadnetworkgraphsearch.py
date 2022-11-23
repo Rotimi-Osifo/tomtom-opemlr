@@ -115,6 +115,8 @@ class roadnetworkgraphsearch:
                 #seg.direction = lanedirection
                 #self.postprocessed_segments[startid] = seg  # updating with direction
                 if self.visitedset.count(startid) == 0:
+                    seg.direction = lanedirection
+                    segments_[startid] = seg
                     self.visitedset.append(startid)
 
                 outgoingids: list = seg.outgoing
