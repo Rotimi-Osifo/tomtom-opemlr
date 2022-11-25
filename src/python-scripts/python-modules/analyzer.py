@@ -6,6 +6,7 @@ import LineStringData
 
 import filterfunctions
 import barefootoutput
+import dekoderoutput
 
 from testdataselector import TestDataSelector
 
@@ -24,19 +25,25 @@ class analyzer:
         testdataselector_barefoot.create_barefoot_data_from_list(visitedset, graphnetwork)
 
     def get_barefoot_output_coordinates_lat_first(self, keyfordataset: int) -> list: # coordinates_name = barefootoutput.coordinates_*
-        barefoot_coordinates = barefootoutput.getbarefootcoordinatesfortrajectory(keyfordataset)
-        barefootroads = list()
-        for segmenttupples in coordinates_name:
-            for point in segmenttupples:
-                barefootroads.append((point[1], point[0])) #lat first for folium map
-        return barefootroads
+        return barefootoutput.get_output_as_flattened_lat_first(keyfordataset)
 
-    def get_barefoot_output_coordinates_lng_first(self, coordinates_name) -> list: # coordinates_name = barefootoutput.coordinates_*
-        barefootroads = list()
-        for segmenttupples in coordinates_name:
-            for point in segmenttupples:
-                barefootroads.append((point[0], point[1])) #lat first for folium map
-        return barefootroads
+    def get_barefoot_output_coordinates_lng_first(self, keyfordataset: int) -> list: # coordinates_name = barefootoutput.coordinates_*
+        return barefootoutput.get_output_as_flattened_lng_first(keyfordataset)
+
+    def getdecodertrajectorycoordinates(self, keyfordataset: int) -> list:
+        dekoderoutputjson = dekoderoutput.getdecodertrajectorycoordinates(keyfordataset)
+
+        lineStringData = LineStringData.LineStringData()
+        lineStringData.get_linestring_from_wkt_strings(dekoderoutputjson)
+        return lineStringData.all_coords_from_wkt
+
+    def getdecodertrajectorycoordinates_lng_first(self, keyfordataset: int) -> list:
+        dekoderoutputjson = dekoderoutput.getdecodertrajectorycoordinates(keyfordataset)
+
+        lineStringData = LineStringData.LineStringData()
+        lineStringData.get_linestring_from_wkt_strings(dekoderoutputjson)
+        return lineStringData.all_coords_from_wkt_lng_first
+
 
     def get_input_data_for_analysis(self, graphnetwork: geopandas, \
                                     roadnetwork_graphsearch: roadnetworkgraphsearch.roadnetworkgraphsearch, \
@@ -48,6 +55,17 @@ class analyzer:
         lineStringData.get_linestring_from_ids(graphnetwork, visitedset)
 
         return lineStringData.all_coords_from_ids
+
+    def get_input_data_for_analysis_lng_first(self, graphnetwork: geopandas, \
+                                    roadnetwork_graphsearch: roadnetworkgraphsearch.roadnetworkgraphsearch, \
+                                    keyfordataset: int):
+        datastore = roadnetwork_graphsearch.datastore
+        visitedset = datastore[keyfordataset]
+
+        lineStringData = LineStringData.LineStringData()
+        lineStringData.get_linestring_from_ids(graphnetwork, visitedset)
+
+        return lineStringData.all_coords_from_ids_lng_first
 
     def buildbase_data(self,  maingraphnetwork: geopandas, highwayref: str)-> geopandas:
         filterfxns = filterfunctions.filterfunctions()

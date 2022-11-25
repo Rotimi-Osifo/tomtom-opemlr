@@ -14537,7 +14537,7 @@ def getbarefootcoordinatesfortrajectory(keyfordataset: int):
     except KeyError:
         print("the key-: ", keyfordataset, " is not in the dictionary!")
         return None
-    
+
 def get_output_as_flattened_lat_first(keyfordataset: int) -> list: #just flatten
     coordinates_lng_first = getbarefootcoordinatesfortrajectory(keyfordataset)
     if coordinates_lng_first is not None:
