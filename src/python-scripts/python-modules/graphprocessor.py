@@ -80,5 +80,6 @@ class graphprocessor:
         successors = graphfuncs.forwardtraversalext(graphnetwork, startid, endid, successorslist)
 
         predecessors = graphfuncs.tracebacktrajectoryext(graphnetwork, endid, startid, predecessorslist)
+        #print(len(predecessors))
 
         return(predecessors, successors)

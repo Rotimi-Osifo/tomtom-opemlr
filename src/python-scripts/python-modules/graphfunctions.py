@@ -71,7 +71,7 @@ class graphfunctions:
         firstu: int = self.get_first_u(gdf)
 
         predecessors: list = self.getpredecessors(maingraphnetwork, firstu)
-    
+
         if predecessors is None:
             return tracebacklist
         else:
@@ -95,6 +95,7 @@ class graphfunctions:
                 else:
                     tracebacklist.append(predecessorsecond)
                     return self.tracebacktrajectoryext(maingraphnetwork, predecessorsecond, startid, tracebacklist)
+        return tracebacklist
 
     def forwardtraversalext(self, maingraphnetwork, currentsegmentid: int, endid: int, forwartraversllist: list):
         gdf = maingraphnetwork[maingraphnetwork['id'].isin([currentsegmentid])]
@@ -117,14 +118,15 @@ class graphfunctions:
                 if forwartraversllist.count(endid) >= 1:
                     return forwartraversllist
                 else:
-                    return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwartraversllist)
+                    return self.forwardtraversalext(maingraphnetwork, succssorfirst, endid, forwartraversllist)
 
                 sucessorsecond = successors[1]
                 forwartraversllist.append(sucessorsecond)
                 if forwartraversllist.count(endid) >= 1:
                     return forwartraversllist
                 else:
-                    return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwartraversllist)
+                    return self.forwardtraversalext(maingraphnetwork, sucessorsecond, endid, forwartraversllist)
+        return forwartraversllist
 
     def forwardtraversal(self, preproceesedsegments: dict, currentsegmentid: int, endid: int, forwartraversllist: list):
 
