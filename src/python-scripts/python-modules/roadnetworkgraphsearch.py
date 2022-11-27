@@ -18,7 +18,7 @@ class roadnetworkgraphsearch:
         self.startdatalist = list()
         # (self, roadid: int, lanedirection: int, mapfilename: str, ref: str, endroadid: int)
         startdataloc = trajectorydata.trajectorydata(4040302, 1, "map_data_as_geojson_" + str(4040302), "E 6",
-                                                     116614212)
+                                                     168975966)
         self.startdatalist.append(startdataloc)
         startdataloc = trajectorydata.trajectorydata(4040443, 2, "map_data_as_geojson_" + str(4040443), "E 6",
                                                      284402024)
