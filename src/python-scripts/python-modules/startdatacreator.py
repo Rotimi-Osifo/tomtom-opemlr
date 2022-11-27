@@ -1,4 +1,4 @@
-import startdata
+import trajectorydata
 import GeometryData as gData
 from geojson import LineString
 import shapely.wkt as shwkt
@@ -9,20 +9,6 @@ class startdatacreator:
 
     def __init__(self):
         self.initialized_segments = dict()
-
-    def getstartdata(self):
-        startdatalist = list()
-
-        startdatalistloc = startdata.Startdata(4040302, 1)
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(284402024, 2)
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(237772646, 1)
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(237772647, 2)
-        startdatalist.append(startdatalistloc)
-
-        return startdatalist
 
     def initialize_segments(self, graphnetwork):
         geometrydata = gData.GeometryData()

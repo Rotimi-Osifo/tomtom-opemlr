@@ -1,6 +1,6 @@
 import GeometryData as gdata
 import neighbour_search as nb_s
-from startdata import Startdata
+from trajectorydata import trajectorydata
 import shapely.wkt as shwkt
 import GeometryData as gData
 
@@ -18,13 +18,13 @@ class TestDataSelector:
     def getstartdata(self):
         startdatalist = list()
 
-        startdatalistloc = Startdata(4040302, 1)
+        startdatalistloc = trajectorydata(4040302, 1)
         startdatalist.append(startdatalistloc)
-        startdatalistloc = Startdata(284402024, 2)
+        startdatalistloc = trajectorydata(284402024, 2)
         startdatalist.append(startdatalistloc)
-        startdatalistloc = Startdata(237772646, 1)
+        startdatalistloc = trajectorydata(237772646, 1)
         startdatalist.append(startdatalistloc)
-        startdatalistloc = Startdata(237772647, 2)
+        startdatalistloc = trajectorydata(237772647, 2)
         startdatalist.append(startdatalistloc)
 
         return  startdatalist

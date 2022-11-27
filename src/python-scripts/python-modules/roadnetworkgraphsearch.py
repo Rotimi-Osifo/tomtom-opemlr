@@ -2,7 +2,9 @@ import segment
 import graphprocessor
 import graphfunctions
 
-import startdata
+import trajectorydata
+
+
 class roadnetworkgraphsearch:
     def __init__(self):
         self.visitedset = None
@@ -12,29 +14,26 @@ class roadnetworkgraphsearch:
         self.segments = None
         self.startdatalist = None
 
-
     def __getstartdata(self):
         self.startdatalist = list()
-
-        startdataloc = startdata.Startdata(4040302, 1, "map_data_as_geojson_" + str(4040302))
+        # (self, roadid: int, lanedirection: int, mapfilename: str, ref: str, endroadid: int)
+        startdataloc = trajectorydata.trajectorydata(4040302, 1, "map_data_as_geojson_" + str(4040302), "E 6",
+                                                     116614212)
         self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(408861785, 2, "map_data_as_geojson_" + str(408861785))
+        startdataloc = trajectorydata.trajectorydata(4040443, 2, "map_data_as_geojson_" + str(4040443), "E 6",
+                                                     284402024)
         self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(4040443, 2, "map_data_as_geojson_" + str(4040443))
+        startdataloc = trajectorydata.trajectorydata(237772646, 1, "map_data_as_geojson_" + str(237772646), "E 45",
+                                                     1023578391)
         self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(222217364, 2, "map_data_as_geojson_" + str(222217364))
+        startdataloc = trajectorydata.trajectorydata(117090882, 2, "map_data_as_geojson_" + str(117090882), "E 45",
+                                                     237772647)
         self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(39887921, 2, "map_data_as_geojson_" + str(39887921))
+        startdataloc = trajectorydata.trajectorydata(10275796, 1, "map_data_as_geojson_" + str(10275796), "E 20",
+                                                     4040484)
         self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(237772646, 1, "map_data_as_geojson_" + str(237772646))
-        self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(117090882, 2, "map_data_as_geojson_" + str(117090882))
-        self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(10275796, 1, "map_data_as_geojson_" + str(10275796))
-        self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(297042452, 2, "map_data_as_geojson_" + str(297042452))
-        self.startdatalist.append(startdataloc)
-        startdataloc = startdata.Startdata(4040439, 2, "map_data_as_geojson_" + str(4040439))
+        startdataloc = trajectorydata.trajectorydata(4040439, 2, "map_data_as_geojson_" + str(4040439), "E 20",
+                                                     297042452)
         self.startdatalist.append(startdataloc)
 
         return self.startdatalist
@@ -46,7 +45,7 @@ class roadnetworkgraphsearch:
             distance = prevdistance + (seg.length)
             seg.cumDist = distance
             segments_[startid] = seg
-            outgoingids: list = seg.outgoing
+            outgoingids: list = seg.successors
 
             print("distances - current segment-: ", startid, ", segment-: ", seg.length, ", start-: ", seg.cumDist)
             if len(outgoingids) == 2:
@@ -69,16 +68,16 @@ class roadnetworkgraphsearch:
 
         if self.visitedset.count(startid) == 0:
             try:
-                seg:segment.segment = segments_[startid]
-                incomingids: list = seg.incoming
-                if len(incomingids) == 1:
-                    incomingid = incomingids[0]
-                    if incomingid is not None:
-                        if self.visitedset.count(incomingid) == 0:
+                seg: segment.segment = segments_[startid]
+                predecessorids: list = seg.predecessors
+                if len(predecessorids) == 1:
+                    predecessorid = predecessorids[0]
+                    if predecessorid is not None:
+                        if self.visitedset.count(predecessorid) == 0:
                             seg.direction = lanedirection
-                            seg.incoming = [incomingid]
+                            seg.predecessors = [predecessorid]
                             segments_[startid] = seg
-                            self.visitedset.append(incomingid)
+                            self.visitedset.append(predecessorid)
                         else:
                             seg.direction = lanedirection
                             segments_[startid] = seg
@@ -87,24 +86,24 @@ class roadnetworkgraphsearch:
                         segments_[startid] = seg
 
 
-                elif len(incomingids) == 2:
-                    firstincomingincomingseg: segment.segment = segments_[incomingids[0]]
-                    print("Trace back-: ", startid, ", ", incomingids[0], " ", firstincomingincomingseg.cumDist)
+                elif len(predecessorids) == 2:
+                    firstpredecessorseg: segment.segment = segments_[predecessorids[0]]
+                    print("Trace back-: ", startid, ", ", predecessorids[0], " ", firstpredecessorseg.cumDist)
 
-                    secondincomingincomingseg: segment.segment = segments_[incomingids[1]]
-                    print("Trace back-: ", startid, ", ", incomingids[1], " ", secondincomingincomingseg.cumDist)
-                    incomingidloc: int = None
-                    if firstincomingincomingseg.cumDist > secondincomingincomingseg.cumDist:
-                        incomingidloc = incomingids[0]
+                    secondpredecessorseg: segment.segment = segments_[predecessorids[1]]
+                    print("Trace back-: ", startid, ", ", predecessorids[1], " ", secondpredecessorseg.cumDist)
+                    predecessoridloc: int = None
+                    if firstpredecessorseg.cumDist > secondpredecessorseg.cumDist:
+                        predecessoridloc = predecessorids[0]
                     else:
-                        incomingidloc = incomingids[1]
+                        predecessoridloc = predecessorids[1]
 
-                    print("After trace back-: ", startid, ", ", incomingidloc)
-                    if incomingidloc is not None:
-                        if self.visitedset.count(incomingidloc) == 0:
+                    print("After trace back-: ", startid, ", ", predecessoridloc)
+                    if predecessoridloc is not None:
+                        if self.visitedset.count(predecessoridloc) == 0:
                             seg.direction = lanedirection
-                            seg.incoming = [incomingidloc]
-                            self.visitedset.append(incomingidloc)
+                            seg.predecessors = [predecessoridloc]
+                            self.visitedset.append(predecessoridloc)
                     else:
                         seg.direction = lanedirection
                         segments_[startid] = seg
@@ -112,19 +111,19 @@ class roadnetworkgraphsearch:
                     seg.direction = lanedirection
                     segments_[startid] = seg
 
-                #seg.direction = lanedirection
-                #self.postprocessed_segments[startid] = seg  # updating with direction
+                # seg.direction = lanedirection
+                # self.postprocessed_segments[startid] = seg  # updating with direction
                 if self.visitedset.count(startid) == 0:
                     seg.direction = lanedirection
                     segments_[startid] = seg
                     self.visitedset.append(startid)
 
-                outgoingids: list = seg.outgoing
-                if len(outgoingids) >= 1:
-                    for outgoingid in outgoingids:
-                        if outgoingid is not None:
-                            if self.visitedset.count(outgoingid) == 0:
-                                self.__buildconnectedsegmentsext(segments_, outgoingid, lanedirection)
+                successorids: list = seg.successors
+                if len(successorids) >= 1:
+                    for successorid in successorids:
+                        if successorid is not None:
+                            if self.visitedset.count(successorid) == 0:
+                                self.__buildconnectedsegmentsext(segments_, successorid, lanedirection)
                 else:
                     return self.visitedset
             except KeyError:
@@ -136,16 +135,16 @@ class roadnetworkgraphsearch:
 
         if self.visitedset.count(startid) == 0:
             try:
-                seg:segment.segment = segments_[startid]
-                incomingids: list = seg.incoming
-                if len(incomingids) == 1:
-                    incomingid = incomingids[0]
-                    if incomingid is not None:
-                        if self.visitedset.count(incomingid) == 0:
+                seg: segment.segment = segments_[startid]
+                predecessors: list = seg.predecessors
+                if len(predecessors) == 1:
+                    predecessorid = predecessors[0]
+                    if predecessorid is not None:
+                        if self.visitedset.count(predecessorid) == 0:
                             seg.direction = lanedirection
-                            seg.incoming = [incomingid]
+                            seg.predecessors = [predecessorid]
                             segments_[startid] = seg
-                            self.visitedset.append(incomingid)
+                            self.visitedset.append(predecessorid)
                         else:
                             seg.direction = lanedirection
                             segments_[startid] = seg
@@ -154,24 +153,24 @@ class roadnetworkgraphsearch:
                         segments_[startid] = seg
 
 
-                elif len(incomingids) == 2:
-                    firstincomingincomingseg: segment.segment = segments_[incomingids[0]]
-                    print("Trace back-: ", startid, ", ", incomingids[0], " ", firstincomingincomingseg.cumDist)
+                elif len(predecessors) == 2:
+                    firstpredecessorseg: segment.segment = segments_[predecessors[0]]
+                    print("Trace back-: ", startid, ", ", predecessors[0], " ", firstpredecessorseg.cumDist)
 
-                    secondincomingincomingseg: segment.segment = segments_[incomingids[1]]
-                    print("Trace back-: ", startid, ", ", incomingids[1], " ", secondincomingincomingseg.cumDist)
-                    incomingidloc: int = None
-                    if firstincomingincomingseg.cumDist > secondincomingincomingseg.cumDist:
-                        incomingidloc = incomingids[0]
+                    secondpredecessorseg: segment.segment = segments_[predecessors[1]]
+                    print("Trace back-: ", startid, ", ", predecessors[1], " ", secondpredecessorseg.cumDist)
+                    predecessoridloc: int = None
+                    if firstpredecessorseg.cumDist > secondpredecessorseg.cumDist:
+                        predecessoridloc = predecessors[0]
                     else:
-                        incomingidloc = incomingids[1]
+                        predecessoridloc = predecessors[1]
 
-                    print("After trace back-: ", startid, ", ", incomingidloc)
-                    if incomingidloc is not None:
-                        if self.visitedset.count(incomingidloc) == 0:
+                    print("After trace back-: ", startid, ", ", predecessoridloc)
+                    if predecessoridloc is not None:
+                        if self.visitedset.count(predecessoridloc) == 0:
                             seg.direction = lanedirection
-                            seg.incoming = [incomingidloc]
-                            self.visitedset.append(incomingidloc)
+                            seg.predecessors = [predecessoridloc]
+                            self.visitedset.append(predecessoridloc)
                     else:
                         seg.direction = lanedirection
                         segments_[startid] = seg
@@ -179,33 +178,33 @@ class roadnetworkgraphsearch:
                     seg.direction = lanedirection
                     segments_[startid] = seg
 
-                #seg.direction = lanedirection
-                #self.postprocessed_segments[startid] = seg  # updating with direction
+                # seg.direction = lanedirection
+                # self.postprocessed_segments[startid] = seg  # updating with direction
                 if self.visitedset.count(startid) == 0:
                     self.visitedset.append(startid)
 
-                outgoingids: list = seg.outgoing
-                if len(outgoingids) == 1:
-                    outgoingid = outgoingids[0]
-                    if outgoingid is not None:
-                        if self.visitedset.count(outgoingid) == 0:
+                successors: list = seg.successors
+                if len(successors) == 1:
+                    successorid = successors[0]
+                    if successorid is not None:
+                        if self.visitedset.count(successorid) == 0:
                             seglic: segment.segment = segments_[startid]
-                            self.__createconnectedsegmentsext(segments_, outgoingid, lanedirection, trajectorylength)
-                if len(outgoingids) == 2:
-                    firstsegloc: segment.segment = segments_[outgoingids[0]]
-                    secondsegloc: segment.segment = segments_[outgoingids[1]]
+                            self.__createconnectedsegmentsext(segments_, successorid, lanedirection, trajectorylength)
+                if len(successors) == 2:
+                    firstsegloc: segment.segment = segments_[successors[0]]
+                    secondsegloc: segment.segment = segments_[successors[1]]
                     firstremainingdistance = trajectorylength - (firstsegloc.cumDist)
                     secondremainingdistance = trajectorylength - (secondsegloc.cumDist)
                     if secondremainingdistance > firstremainingdistance:
-                        if self.visitedset.count(outgoingids[1]) == 0:
-                            seg.outgoing = [outgoingids[1]]
+                        if self.visitedset.count(successors[1]) == 0:
+                            seg.successors = [successors[1]]
                             segments_[startid] = seg
-                            self.__createconnectedsegmentsext(segments_, outgoingids[1], lanedirection, trajectorylength)
+                            self.__createconnectedsegmentsext(segments_, successors[1], lanedirection, trajectorylength)
                     else:
-                        if self.visitedset.count(outgoingids[0]) == 0:
-                            seg.outgoing = [outgoingids[0]]
+                        if self.visitedset.count(successors[0]) == 0:
+                            seg.successors = [successors[0]]
                             segments_[startid] = seg
-                            self.__createconnectedsegmentsext(segments_, outgoingids[0], lanedirection, trajectorylength)
+                            self.__createconnectedsegmentsext(segments_, successors[0], lanedirection, trajectorylength)
 
 
                 else:
@@ -223,14 +222,12 @@ class roadnetworkgraphsearch:
 
         self.__getstartdata()
         for startdataloc in self.startdatalist:
-
-            distance:float = 0
+            distance: float = 0
             self.__calculatedistances(self.segments, startdataloc.roadid, distance)
             self.trajectorydistances[startdataloc.roadid] = distance
 
             self.visitedset = list()
-            #self.__buildconnectedsegmentsext(self.segments, startdataloc.roadid, startdataloc.lanedirection)
+            # self.__buildconnectedsegmentsext(self.segments, startdataloc.roadid, startdataloc.lanedirection)
             self.__createconnectedsegmentsext(self.segments, startdataloc.roadid, startdataloc.lanedirection, distance)
             print(self.visitedset)
             self.datastore[startdataloc.roadid] = self.visitedset
-

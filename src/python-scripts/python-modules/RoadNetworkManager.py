@@ -7,7 +7,7 @@ import Nodes
 import neighboursearch
 import roadnetworkgraphsearch
 
-import startdata
+import trajectorydata
 import connectedsegments
 
 
@@ -23,13 +23,13 @@ class RoadNetworkManager:
     def getstartdata(self):
         startdatalist = list()
 
-        startdatalistloc = startdata.Startdata(4040302, 1, "one_way_4040302_map_graph")
+        startdatalistloc = startdata.trajectorydata(4040302, 1, "one_way_4040302_map_graph")
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(284402024, 2, "one_way_39887921_map_graph")
+        startdatalistloc = startdata.trajectorydata(284402024, 2, "one_way_39887921_map_graph")
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(237772646, 1, "one_way_237772646_map_graph")
+        startdatalistloc = startdata.trajectorydata(237772646, 1, "one_way_237772646_map_graph")
         startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.Startdata(117090882, 2, "one_way_117090882_map_graph")
+        startdatalistloc = startdata.trajectorydata(117090882, 2, "one_way_117090882_map_graph")
         startdatalist.append(startdatalistloc)
 
         return startdatalist

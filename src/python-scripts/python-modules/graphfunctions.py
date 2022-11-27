@@ -6,6 +6,12 @@ class graphfunctions:
     def __init__(selfself):
         pass
 
+    def get_point_from_nodes(self, nodes, nodeid: int):
+        gdf_node = nodes[nodes['id'].isin([nodeid])]
+        for node in gdf_node.itertuples():
+            print(node.geometry)
+            return node.geometry
+
     def get_last_v(self, gdf: geopandas) -> int: # uses graph functionality in the graph network
         last_v = None
         for seg in gdf.itertuples():
@@ -16,14 +22,14 @@ class graphfunctions:
         for seg in gdf.itertuples():
             return seg.u
 
-    def getincomingline(self, graphnetwork: geopandas, firstu) -> int: # uses graph functionality in the graph network
+    def getpredecessors(self, graphnetwork: geopandas, firstu) -> int: # uses graph functionality in the graph network
         idslist = list()
         for road in graphnetwork.itertuples():
             if road.v == firstu: # firstu of the current segment
                 idslist.append(road.id)
         return idslist
 
-    def getoutgoingline(self, graphnetwork: geopandas, lastv) -> int: # uses graph functionality in the graph network
+    def getsuccessors(self, graphnetwork: geopandas, lastv) -> int: # uses graph functionality in the graph network
         idslist = list()
         for road in graphnetwork.itertuples():
             if road.u == lastv: # lastv of the current segment
@@ -33,11 +39,11 @@ class graphfunctions:
     def tracebackincoming(self, initializedsegments: dict, currentsegmentid: int, tracebacklist: list):
 
         initializedsegment: segment.segment = initializedsegments[currentsegmentid]
-        incomingsegments: list = initializedsegment.incoming
+        incomingsegments: list = initializedsegment.predecessors
         if incomingsegments is not None and len(incomingsegments) >= 1:
             for incomingsegment in incomingsegments:
                 initializedsegmentloc: segment.segment = initializedsegments[incomingsegment]
-                incomingsegmentsloc: list = initializedsegmentloc.incoming
+                incomingsegmentsloc: list = initializedsegmentloc.predecessors
                 if incomingsegmentsloc is not None:
                     tracebacklist.append(incomingsegment)
                     self.tracebackincoming(initializedsegments, incomingsegment, tracebacklist)
@@ -48,7 +54,7 @@ class graphfunctions:
         for roadid in visitedset:
             try:
                 initializedsegment: segment.segment = initializedsegments[roadid]
-                incomingsegments: list = initializedsegment.incoming
+                incomingsegments: list = initializedsegment.predecessors
                 if incomingsegments is not None and len(incomingsegments) >= 1:
                     tracebacklist = list()
                     self.tracebackincoming(initializedsegments, roadid, tracebacklist)

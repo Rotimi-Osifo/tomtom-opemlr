@@ -59,8 +59,8 @@ class graphprocessor:
                 seg.geometry= linegeom
                 seg.lastv = graphfuncs.get_last_v(gdf)
                 seg.firstu = graphfuncs.get_first_u(gdf)
-                seg.outgoing = graphfuncs.getoutgoingline(graphnetwork, seg.lastv) # incoming segment to the current
-                seg.incoming = graphfuncs.getincomingline(graphnetwork, seg.firstu) # out going segment from the current
+                seg.successors = graphfuncs.getsuccessors(graphnetwork, seg.lastv) # incoming segment to the current
+                seg.predecessors = graphfuncs.getpredecessors(graphnetwork, seg.firstu) # out going segment from the current
                 seg.length = length
                 seg.cumDist = cumdistance
                 seg.id = road.id

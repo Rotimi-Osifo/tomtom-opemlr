@@ -35,14 +35,14 @@ class connectedsegments:
 
     def __getallincoming(self, initializedsegments, currentsegmentid):
         initializedsegment: segment.segment = initializedsegments[ currentsegmentid]
-        incomingsegments: list = initializedsegment.incoming
+        incomingsegments: list = initializedsegment.predecessors
         allincoming = list()
         while incomingsegments is not None:
             for currentsegmentidloc in incomingsegments:
                 allincoming.append(currentsegmentidloc)
                 currentsegmentid = currentsegmentidloc
             initializedsegment: segment.segment = initializedsegments[currentsegmentid]
-            incomingsegments: list = initializedsegment.incoming
+            incomingsegments: list = initializedsegment.predecessors
         return allincoming.reverse()
 
     def get_last_node(self, nodeslist: list) -> nd.Node:
@@ -73,7 +73,7 @@ class connectedsegments:
             for roadid in visitedset:
                 preprocessedsegment: segment.segment = preprocessedsegments[roadid]
                 nodeslist: list = preprocessedsegment.nodes.nodeslist
-                incomingsegments: list = preprocessedsegment.incoming
+                incomingsegments: list = preprocessedsegment.predecessors
                 if incomingsegments is not None and len(incomingsegments) >= 1:
                     incomingsegment = incomingsegments[0]
                     print("reseting incoming-: ", roadid, ", incoming", incomingsegment)
@@ -86,7 +86,7 @@ class connectedsegments:
                         node_cnt = node_cnt + 1
                     preprocessedincomingsegment.nodes.nodeslist = reorderednodesloc
                     preprocessedsegments[incomingsegment] = preprocessedincomingsegment
-                    preprocessedsegment.incoming = [incomingsegment]
+                    preprocessedsegment.predecessors = [incomingsegment]
                     preprocessedsegments[roadid] = preprocessedsegment
 
                 reorderednodes = list()
@@ -107,7 +107,7 @@ class connectedsegments:
             for roadid in visitedset:
                 preprocessedsegment: segment.segment = re_preprocessedsegments[roadid]
                 nodeslist: list = preprocessedsegment.nodes.nodeslist
-                incomingids = preprocessedsegment.incoming
+                incomingids = preprocessedsegment.predecessors
                 if len(incomingids) >= 1:
                     incomingid = incomingids[0]
                     incomingseg: segment.segment = re_preprocessedsegments[incomingid]

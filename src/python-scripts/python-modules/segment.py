@@ -8,8 +8,8 @@ class segment:
         self.maxspeed = None
         self.id = None
         self.travel_time = None
-        self.incoming = None
-        self.outgoing = None
+        self.predecessors = None
+        self.successors = None
         self.geometry = None
         self.lastv = None
         self.firstu = None

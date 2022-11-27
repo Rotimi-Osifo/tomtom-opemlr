@@ -78,14 +78,14 @@ class segmentinitializer:
                 seg.geometry= linegeom
                 seg.lastv = self.__get_last_v(gdf)
                 seg.firstu = self.__get_first_u(gdf)
-                seg.outgoing = self.__getoutgoingline(graphnetwork, seg.lastv) # incoming segment to the current
-                seg.incoming = self.__getincomingline(graphnetwork, seg.firstu) # out going segment from the current
+                seg.successors = self.__getoutgoingline(graphnetwork, seg.lastv) # incoming segment to the current
+                seg.predecessors = self.__getincomingline(graphnetwork, seg.firstu) # out going segment from the current
                 seg.length = length
                 seg.id = road.id
                 seg.nodes = nodes
                 seg.setFow(road.highway)
                 seg.setFrc(road.highway)
                 seg.maxspeed = CummulativeDistanceAndTime.road_class_to_kmph(road.highway)
-                print("incoming line id-: ", seg.incoming, ", current line id-: ", seg.id, ", out going line id-:  ", seg.outgoing, ", length-: ", seg.length)
+                print("incoming line id-: ", seg.predecessors, ", current line id-: ", seg.id, ", out going line id-:  ", seg.successors, ", length-: ", seg.length)
                 self.initialized_segments[road.id] = seg
                 prev_roadid = road.id
