@@ -131,6 +131,78 @@ class roadnetworkgraphsearch:
         else:
             return self.visitedset
 
+    def __buildconnectedsegmentsext2(self, segments_: dict, startid: int, lanedirection: int, endid: int):
+
+        if self.visitedset.count(startid) == 0:
+            try:
+                seg: segment.segment = segments_[startid]
+                predecessorids: list = seg.predecessors
+                if len(predecessorids) == 1:
+                    predecessorid = predecessorids[0]
+                    if predecessorid is not None:
+                        if self.visitedset.count(predecessorid) == 0:
+                            seg.direction = lanedirection
+                            seg.predecessors = [predecessorid]
+                            segments_[startid] = seg
+                            self.visitedset.append(predecessorid)
+                        else:
+                            seg.direction = lanedirection
+                            segments_[startid] = seg
+                    else:
+                        seg.direction = lanedirection
+                        segments_[startid] = seg
+
+
+                elif len(predecessorids) == 2:
+                    firstpredecessorseg: segment.segment = segments_[predecessorids[0]]
+                    print("Trace back-: ", startid, ", ", predecessorids[0], " ", firstpredecessorseg.cumDist)
+
+                    secondpredecessorseg: segment.segment = segments_[predecessorids[1]]
+                    print("Trace back-: ", startid, ", ", predecessorids[1], " ", secondpredecessorseg.cumDist)
+                    predecessoridloc: int = None
+                    if firstpredecessorseg.cumDist > secondpredecessorseg.cumDist:
+                        predecessoridloc = predecessorids[0]
+                    else:
+                        predecessoridloc = predecessorids[1]
+
+                    print("After trace back-: ", startid, ", ", predecessoridloc)
+                    if predecessoridloc is not None:
+                        if self.visitedset.count(predecessoridloc) == 0:
+                            seg.direction = lanedirection
+                            seg.predecessors = [predecessoridloc]
+                            self.visitedset.append(predecessoridloc)
+                elif predecessorids is None: # start of trajectory - possibly
+                    seg.direction = lanedirection
+                    segments_[startid] = seg
+                    self.visitedset.append(startid)
+
+                successorids: list = seg.successors
+                if successorids is None: # possibly end of trajectories
+                    seg.direction = lanedirection
+                    segments_[startid] = seg
+                    # already added to visited list as a successor.
+                    # No need to add it again.
+                elif len(successorids) == 1:
+                    successorid = successorids[0]
+                    if self.visitedset.count(successorid) == 0:
+                        seg.successors = [successorid]
+                        seg.direction = lanedirection
+                        segments_[startid] = seg #updated
+                        self.visitedset.append(successorid)
+                if len(successorids) == 2:
+                    successoridfirst = successorids[0]
+                    successoridsecond = successorids[1]
+                    for successorid in successorids:
+                        if successorid is not None:
+                            if self.visitedset.count(successorid) == 0:
+                                self.__buildconnectedsegmentsext(segments_, successorid, lanedirection)
+                else:
+                    return self.visitedset
+            except KeyError:
+                print("the key-: ", startid, " is not in the dictionary!")
+        else:
+            return self.visitedset
+
     def __createconnectedsegmentsext(self, segments_, startid, lanedirection, trajectorylength: float):
 
         if self.visitedset.count(startid) == 0:

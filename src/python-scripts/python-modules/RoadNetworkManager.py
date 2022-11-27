@@ -21,18 +21,29 @@ class RoadNetworkManager:
         self.idlist = None
 
     def getstartdata(self):
-        startdatalist = list()
 
-        startdatalistloc = startdata.trajectorydata(4040302, 1, "one_way_4040302_map_graph")
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.trajectorydata(284402024, 2, "one_way_39887921_map_graph")
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.trajectorydata(237772646, 1, "one_way_237772646_map_graph")
-        startdatalist.append(startdatalistloc)
-        startdatalistloc = startdata.trajectorydata(117090882, 2, "one_way_117090882_map_graph")
-        startdatalist.append(startdatalistloc)
+        self.startdatalist = list()
+        # (self, roadid: int, lanedirection: int, mapfilename: str, ref: str, endroadid: int)
+        startdataloc = trajectorydata.trajectorydata(4040302, 1, "map_data_as_geojson_" + str(4040302), "E 6",
+                                                     116614212)
+        self.startdatalist.append(startdataloc)
+        startdataloc = trajectorydata.trajectorydata(4040443, 2, "map_data_as_geojson_" + str(4040443), "E 6",
+                                                     284402024)
+        self.startdatalist.append(startdataloc)
+        startdataloc = trajectorydata.trajectorydata(237772646, 1, "map_data_as_geojson_" + str(237772646), "E 45",
+                                                     1023578391)
+        self.startdatalist.append(startdataloc)
+        startdataloc = trajectorydata.trajectorydata(117090882, 2, "map_data_as_geojson_" + str(117090882), "E 45",
+                                                     237772647)
+        self.startdatalist.append(startdataloc)
+        startdataloc = trajectorydata.trajectorydata(10275796, 1, "map_data_as_geojson_" + str(10275796), "E 20",
+                                                     4040484)
+        self.startdatalist.append(startdataloc)
+        startdataloc = trajectorydata.trajectorydata(4040439, 2, "map_data_as_geojson_" + str(4040439), "E 20",
+                                                     297042452)
+        self.startdatalist.append(startdataloc)
 
-        return startdatalist
+        return self.startdatalist
 
     def createlines(self, startId, targetNetwork, mainNetwork):
         geometryData = gdata.GeometryData()

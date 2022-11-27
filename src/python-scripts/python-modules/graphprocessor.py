@@ -59,8 +59,8 @@ class graphprocessor:
                 seg.geometry= linegeom
                 seg.lastv = graphfuncs.get_last_v(gdf)
                 seg.firstu = graphfuncs.get_first_u(gdf)
-                seg.successors = graphfuncs.getsuccessors(graphnetwork, seg.lastv) # incoming segment to the current
-                seg.predecessors = graphfuncs.getpredecessors(graphnetwork, seg.firstu) # out going segment from the current
+                seg.successors = graphfuncs.getsuccessors(graphnetwork, seg.lastv) # outgoing segment from the current
+                seg.predecessors = graphfuncs.getpredecessors(graphnetwork, seg.firstu) # incoming segment to the current
                 seg.length = length
                 seg.cumDist = cumdistance
                 seg.id = road.id
@@ -71,3 +71,14 @@ class graphprocessor:
                 #print("incoming line id-: ", seg.incoming, ", current line id-: ", seg.id, ", out going line id-:  ", seg.outgoing, ", length-: ", seg.length)
                 self.preprocessed_segments[road.id] = seg
                 prev_roadid = road.id
+
+    def preprocess_test(self, graphnetwork, startid:int, endid:int): # uses graph functionality in the graph network
+        graphfuncs = graphfxns.graphfunctions()
+        successorslist:list = list()
+        predecessorslist:list = list()
+
+        successors = graphfuncs.forwardtraversalext(graphnetwork, startid, endid, successorslist)
+
+        predecessors = graphfuncs.tracebacktrajectoryext(graphnetwork, endid, startid, predecessorslist)
+
+        return(predecessors, successors)

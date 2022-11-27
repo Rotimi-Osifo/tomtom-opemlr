@@ -1,6 +1,7 @@
 import geopandas as geopandas
 import segment
 import Node
+import graphfunctions as graphfxns
 
 class graphfunctions:
     def __init__(selfself):
@@ -22,19 +23,137 @@ class graphfunctions:
         for seg in gdf.itertuples():
             return seg.u
 
-    def getpredecessors(self, graphnetwork: geopandas, firstu) -> int: # uses graph functionality in the graph network
+    def getpredecessors(self, graphnetwork: geopandas, firstu) -> list: # uses graph functionality in the graph network
         idslist = list()
         for road in graphnetwork.itertuples():
             if road.v == firstu: # firstu of the current segment
                 idslist.append(road.id)
         return idslist
 
-    def getsuccessors(self, graphnetwork: geopandas, lastv) -> int: # uses graph functionality in the graph network
+    def getsuccessors(self, graphnetwork: geopandas, lastv) -> list: # uses graph functionality in the graph network
         idslist = list()
         for road in graphnetwork.itertuples():
             if road.u == lastv: # lastv of the current segment
                 idslist.append(road.id)
         return idslist
+
+    def tracebacktrajectory(self, preproceesedsegments: dict, currentsegmentid: int, startid: int, tracebacklist: list):
+
+        preprocessedsegment: segment.segment = preproceesedsegments[currentsegmentid]
+        predecessors: list = preprocessedsegment.predecessors
+        if predecessors is None:
+           return tracebacklist
+        else:
+            if len(predecessors) == 1:
+                tracebacklist.append(predecessors[0])
+                if tracebacklist.count(startid) >= 1:
+                    return tracebacklist
+                else:
+                    return self.tracebacktrajectory(preproceesedsegments, predecessors[0], startid, tracebacklist)
+            elif len(predecessors) == 2:
+                predecessorfirst = predecessors[0]
+                tracebacklist.append(predecessorfirst)
+
+                if tracebacklist.count(startid) >= 1:
+                    return tracebacklist
+                else:
+                    return self.tracebacktrajectory(preproceesedsegments, predecessorfirst, startid, tracebacklist)
+
+                predecessorsecond = predecessors[1]
+                tracebacklist.append(predecessorsecond)
+                if tracebacklist.count(startid) >= 1:
+                    return tracebacklist
+                else:
+                    return self.tracebacktrajectory(preproceesedsegments, predecessorsecond, startid, tracebacklist)
+
+    def tracebacktrajectoryext(self, maingraphnetwork, currentsegmentid: int, startid: int, tracebacklist: list):
+        gdf = maingraphnetwork[maingraphnetwork['id'].isin([currentsegmentid])]
+        firstu: int = self.get_first_u(gdf)
+
+        predecessors: list = self.getpredecessors(maingraphnetwork, firstu)
+    
+        if predecessors is None:
+            return tracebacklist
+        else:
+            if len(predecessors) == 1:
+                if tracebacklist.count(startid) >= 1:
+                    return tracebacklist
+                else:
+                    tracebacklist.append(predecessors[0])
+                    return self.tracebacktrajectoryext(maingraphnetwork, predecessors[0], startid, tracebacklist)
+            elif len(predecessors) == 2:
+                predecessorfirst = predecessors[0]
+                if tracebacklist.count(startid) >= 1:
+                    return tracebacklist
+                else:
+                    tracebacklist.append(predecessorfirst)
+                    return self.tracebacktrajectoryext(maingraphnetwork, predecessorfirst, startid, tracebacklist)
+
+                predecessorsecond = predecessors[1]
+                if tracebacklist.count(startid) >= 1:
+                    return tracebacklist
+                else:
+                    tracebacklist.append(predecessorsecond)
+                    return self.tracebacktrajectoryext(maingraphnetwork, predecessorsecond, startid, tracebacklist)
+
+    def forwardtraversalext(self, maingraphnetwork, currentsegmentid: int, endid: int, forwartraversllist: list):
+        gdf = maingraphnetwork[maingraphnetwork['id'].isin([currentsegmentid])]
+        lastv :int = self.get_last_v(gdf)
+
+        successors: list = self.getsuccessors(maingraphnetwork, lastv)
+        if successors is None:
+            return forwartraversllist
+        else:
+            if len(successors) == 1:
+                forwartraversllist.append(successors[0])
+                if forwartraversllist.count(endid) >= 1:
+                    return forwartraversllist
+                else:
+                    return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwartraversllist)
+            elif len(successors) == 2:
+                succssorfirst = successors[0]
+                forwartraversllist.append(succssorfirst)
+
+                if forwartraversllist.count(endid) >= 1:
+                    return forwartraversllist
+                else:
+                    return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwartraversllist)
+
+                sucessorsecond = successors[1]
+                forwartraversllist.append(sucessorsecond)
+                if forwartraversllist.count(endid) >= 1:
+                    return forwartraversllist
+                else:
+                    return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwartraversllist)
+
+    def forwardtraversal(self, preproceesedsegments: dict, currentsegmentid: int, endid: int, forwartraversllist: list):
+
+        preprocessedsegment: segment.segment = preproceesedsegments[currentsegmentid]
+        successors: list = preprocessedsegment.successors
+        if successors is None:
+            return forwartraversllist
+        else:
+            if len(successors) == 1:
+                forwartraversllist.append(successors[0])
+                if forwartraversllist.count(endid) >= 1:
+                    return forwartraversllist
+                else:
+                    return self.tracebacktrajectory(preproceesedsegments, successors[0], endid, forwartraversllist)
+            elif len(successors) == 2:
+                succssorfirst = successors[0]
+                forwartraversllist.append(succssorfirst)
+
+                if forwartraversllist.count(endid) >= 1:
+                    return forwartraversllist
+                else:
+                    return self.tracebacktrajectory(preproceesedsegments, succssorfirst, endid, forwartraversllist)
+
+                sucessorsecond = successors[1]
+                forwartraversllist.append(sucessorsecond)
+                if forwartraversllist.count(endid) >= 1:
+                    return forwartraversllist
+                else:
+                    return self.tracebacktrajectory(preproceesedsegments, predecessorsecond, endid, forwartraversllist)
 
     def tracebackincoming(self, initializedsegments: dict, currentsegmentid: int, tracebacklist: list):
 
