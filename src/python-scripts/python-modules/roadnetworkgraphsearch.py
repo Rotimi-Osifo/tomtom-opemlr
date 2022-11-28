@@ -9,34 +9,35 @@ class roadnetworkgraphsearch:
     def __init__(self):
         self.visitedset = None
         self.datastore = dict()
+        self.trajectoriesstore = dict()
         self.trajectorydistances = dict()
         self.postprocessed_segments = dict()
-        self.segments = None
-        self.startdatalist = None
+        self.segments = dict()
+        self.trajectorydatalist = None
 
     def __getstartdata(self):
-        self.startdatalist = list()
+        self.trajectorydatalist = list()
         # (self, roadid: int, lanedirection: int, mapfilename: str, ref: str, endroadid: int)
-        startdataloc = trajectorydata.trajectorydata(4040302, 1, "map_data_as_geojson_" + str(4040302), "E 6",
+        trajectorydataloc = trajectorydata.trajectorydata(4040302, 1, "map_data_as_geojson_" + str(4040302), "E 6",
                                                      168975966)
-        self.startdatalist.append(startdataloc)
-        startdataloc = trajectorydata.trajectorydata(4040443, 2, "map_data_as_geojson_" + str(4040443), "E 6",
+        self.trajectorydatalist.append(trajectorydataloc)
+        trajectorydataloc = trajectorydata.trajectorydata(4040443, 2, "map_data_as_geojson_" + str(4040443), "E 6",
                                                      284402024)
-        self.startdatalist.append(startdataloc)
-        startdataloc = trajectorydata.trajectorydata(237772646, 1, "map_data_as_geojson_" + str(237772646), "E 45",
+        self.trajectorydatalist.append(trajectorydataloc)
+        trajectorydataloc = trajectorydata.trajectorydata(237772646, 1, "map_data_as_geojson_" + str(237772646), "E 45",
                                                      1023578391)
-        self.startdatalist.append(startdataloc)
-        startdataloc = trajectorydata.trajectorydata(117090882, 2, "map_data_as_geojson_" + str(117090882), "E 45",
+        self.trajectorydatalist.append(trajectorydataloc)
+        trajectorydataloc = trajectorydata.trajectorydata(117090882, 2, "map_data_as_geojson_" + str(117090882), "E 45",
                                                      237772647)
-        self.startdatalist.append(startdataloc)
-        startdataloc = trajectorydata.trajectorydata(10275796, 1, "map_data_as_geojson_" + str(10275796), "E 20",
+        self.trajectorydatalist.append(trajectorydataloc)
+        trajectorydataloc = trajectorydata.trajectorydata(10275796, 1, "map_data_as_geojson_" + str(10275796), "E 20",
                                                      4040484)
-        self.startdatalist.append(startdataloc)
-        startdataloc = trajectorydata.trajectorydata(4040439, 2, "map_data_as_geojson_" + str(4040439), "E 20",
+        self.trajectorydatalist.append(trajectorydataloc)
+        trajectorydataloc = trajectorydata.trajectorydata(4040439, 2, "map_data_as_geojson_" + str(4040439), "E 20",
                                                      297042452)
-        self.startdatalist.append(startdataloc)
+        self.trajectorydatalist.append(trajectorydataloc)
 
-        return self.startdatalist
+        return self.trajectorydatalist
 
     def __calculatedistances(self, segments_, startid: int, distance: float):
         try:
@@ -293,13 +294,24 @@ class roadnetworkgraphsearch:
         self.segments = segment_processor.preprocessed_segments
 
         self.__getstartdata()
-        for startdataloc in self.startdatalist:
+        for startdataloc in self.trajectorydatalist:
             distance: float = 0
             self.__calculatedistances(self.segments, startdataloc.roadid, distance)
             self.trajectorydistances[startdataloc.roadid] = distance
 
             self.visitedset = list()
-            # self.__buildconnectedsegmentsext(self.segments, startdataloc.roadid, startdataloc.lanedirection)
             self.__createconnectedsegmentsext(self.segments, startdataloc.roadid, startdataloc.lanedirection, distance)
             print(self.visitedset)
             self.datastore[startdataloc.roadid] = self.visitedset
+
+    def buildconnectedsegmentsext(self, graphnetwork):
+
+        self.__getstartdata()
+        for trajectorydataloc in self.trajectorydatalist:
+            segment_processor = graphprocessor.graphprocessor()
+            trajectory_segments = segment_processor.preprocessext(graphnetwork, trajectorydataloc.trajectorystart, trajectorydataloc.trajectoryend)
+
+            #self.visitedset = list()
+            #self.__createconnectedsegmentsext(trajectory_segments, trajectorydataloc.trajectorystart, trajectorydataloc.lanedirection)
+            #print(self.visitedset)
+            self.trajectoriesstore[trajectorydataloc.trajectorystart] = trajectory_segments

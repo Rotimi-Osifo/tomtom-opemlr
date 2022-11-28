@@ -13,6 +13,10 @@ class graphfunctions:
             print(node.geometry)
             return node.geometry
 
+    def gethighway(self, gdf: geopandas) -> str:
+        for seg in gdf.itertuples():
+            return seg.highway
+
     def get_last_v(self, gdf: geopandas) -> int: # uses graph functionality in the graph network
         last_v = None
         for seg in gdf.itertuples():
@@ -30,12 +34,20 @@ class graphfunctions:
                 idslist.append(road.id)
         return idslist
 
+    def getreversepath(self, graphnetwork: geopandas, currentsegmentid: int, startid: int) -> list:  # uses graph functionality in the graph network
+        tracebacklist = list()
+        return self.tracebacktrajectoryext(graphnetwork, currentsegmentid,  startid, tracebacklist)
+
     def getsuccessors(self, graphnetwork: geopandas, lastv) -> list: # uses graph functionality in the graph network
         idslist = list()
         for road in graphnetwork.itertuples():
             if road.u == lastv: # lastv of the current segment
                 idslist.append(road.id)
         return idslist
+
+    def getpath(self, graphnetwork: geopandas, currentsegmentid: int, endid: int) -> list: # uses graph functionality in the graph network
+        forwartraversllist = list()
+        return self.forwardtraversalext(graphnetwork, currentsegmentid, endid, forwartraversllist)
 
     def tracebacktrajectory(self, preproceesedsegments: dict, currentsegmentid: int, startid: int, tracebacklist: list):
 

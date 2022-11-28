@@ -196,7 +196,7 @@ class RoadNetworkManager:
         connected_segments = connectedsegments.connectedsegments()
         re_initializedsegments = connected_segments.build_connected_segments(roadnetwork_graphsearch.datastore, roadnetwork_graphsearch.segments)
 
-        for startdataloc in roadnetwork_graphsearch.startdatalist:
+        for startdataloc in roadnetwork_graphsearch.trajectorydatalist:
             visitedset: list = roadnetwork_graphsearch.datastore[startdataloc.roadid]
 
             featurecollectiondata = fcData.FeatureCollectionData()
