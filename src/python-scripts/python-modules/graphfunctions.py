@@ -128,42 +128,41 @@ class graphfunctions:
                     return self.tracebacktrajectoryext(maingraphnetwork, predecessorsecond, startid, tracebacklist)
         return tracebacklist
 
-    def forwardtraversalext(self, maingraphnetwork, currentsegmentid: int, endid: int, forwartraversllist: list):
+    def forwardtraversalext(self, maingraphnetwork, currentsegmentid: int, endid: int, forwardtraversallist: list):
         gdf = maingraphnetwork[maingraphnetwork['id'].isin([currentsegmentid])]
         lastv :int = self.get_last_v(gdf)
 
         successors: list = self.getsuccessors(maingraphnetwork, lastv)
         if successors is None:
             if  currentsegmentid == endid:
-                forwartraversllist.append(currentsegmentid)
-            return forwartraversllist
+                forwardtraversallist.append(currentsegmentid)
+            return forwardtraversallist
         else:
             if len(successors) == 1:
-                forwartraversllist.append(successors[0])
-                if forwartraversllist.count(endid) >= 1:
-                    return forwartraversllist
+                forwardtraversallist.append(successors[0])
+                if forwardtraversallist.count(endid) >= 1:
+                    return forwardtraversallist
                 else:
-                    return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwartraversllist)
+                    return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwardtraversallist)
             elif len(successors) == 2:
-                random.shuffle(successors)
+                #random.shuffle(successors)
                 succssorfirst = successors[0]
-                #succssorsecond = successors[1]
                 #successorid = self.comparelengths(maingraphnetwork, succssorfirst, succssorsecond)
-                forwartraversllist.append(succssorfirst)
+                forwardtraversallist.append(succssorfirst)
 
-                if forwartraversllist.count(endid) >= 1:
+                if forwardtraversallist.count(endid) >= 1:
+                    return forwardtraversallist
+                else:
+                    return self.forwardtraversalext(maingraphnetwork, succssorfirst , endid, forwardtraversallist)
+
+                sucessorsecond = successors[1]
+                forwardtraversallist.append(sucessorsecond)
+                if forwardtraversallist.count(endid) >= 1:
                     return forwartraversllist
                 else:
-                    return self.forwardtraversalext(maingraphnetwork, succssorfirst , endid, forwartraversllist)
+                    return self.forwardtraversalext(maingraphnetwork, sucessorsecond, endid, forwardtraversallist)
 
-                #sucessorsecond = successors[1]
-                #forwartraversllist.append(sucessorsecond)
-                #if forwartraversllist.count(endid) >= 1:
-                #    return forwartraversllist
-                #else:
-                #    return self.forwardtraversalext(maingraphnetwork, sucessorsecond, endid, forwartraversllist)
-
-        return forwartraversllist
+        return forwardtraversallist
 
     def forwardtraversal(self, preproceesedsegments: dict, currentsegmentid: int, endid: int, forwartraversllist: list):
 

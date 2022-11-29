@@ -132,7 +132,7 @@ class graphprocessor:
             seg.maxspeed = CummulativeDistanceAndTime.road_class_to_kmph(highway)
             # print("incoming line id-: ", seg.incoming, ", current line id-: ", seg.id, ", out going line id-:  ", seg.outgoing, ", length-: ", seg.length)
             preprocessed_segments[roadid] = seg
-            return preprocessed_segments
+        return preprocessed_segments
 
 
     def preprocess_test(self, graphnetwork, startid:int, endid:int): # uses graph functionality in the graph network

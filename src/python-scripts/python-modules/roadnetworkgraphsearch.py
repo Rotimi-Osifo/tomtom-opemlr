@@ -3,6 +3,7 @@ import graphprocessor
 
 
 import trajectorydata
+import FeatureCollectionData as fcData
 
 
 class roadnetworkgraphsearch:
@@ -294,15 +295,15 @@ class roadnetworkgraphsearch:
         self.segments = segment_processor.preprocessed_segments
 
         self.__getstartdata()
-        for startdataloc in self.trajectorydatalist:
+        for trajectorydataloc in self.trajectorydatalist:
             distance: float = 0
-            self.__calculatedistances(self.segments, startdataloc.roadid, distance)
-            self.trajectorydistances[startdataloc.roadid] = distance
+            self.__calculatedistances(self.segments, trajectorydataloc.roadid, distance)
+            self.trajectorydistances[trajectorydataloc.roadid] = distance
 
             self.visitedset = list()
-            self.__createconnectedsegmentsext(self.segments, startdataloc.roadid, startdataloc.lanedirection, distance)
+            self.__createconnectedsegmentsext(self.segments, trajectorydataloc.roadid, trajectorydataloc.lanedirection, distance)
             print(self.visitedset)
-            self.datastore[startdataloc.roadid] = self.visitedset
+            self.datastore[trajectorydataloc.roadid] = self.visitedset
 
     def buildconnectedsegmentsext(self, graphnetwork):
 
@@ -314,4 +315,18 @@ class roadnetworkgraphsearch:
             #self.visitedset = list()
             #self.__createconnectedsegmentsext(trajectory_segments, trajectorydataloc.trajectorystart, trajectorydataloc.lanedirection)
             #print(self.visitedset)
+
+            trajectory_start_segment: segment.segment = trajectory_segments[trajectorydataloc.trajectorystart]
+            trajectory_path_list: list = trajectory_start_segment.successors
+            trajectory_path_list.insert(0, trajectorydataloc.trajectorystart)
+            
+            featurecollectiondata = fcData.FeatureCollectionData()
+            featurecollectiondata.createCollectionsFromConnectedSegments(trajectory_path_list, trajectory_segments)
+
+            data_path = "../../../data/"
+            featurecollectiondata.writeCollection(data_path + trajectorydataloc.mapfilename + ".geojson",
+                                                  featurecollectiondata.all_collection)
+            featurecollectiondata.writeCollection(data_path + trajectorydataloc.mapfilename + ".json",
+                                                  featurecollectiondata.all_collection)
+
             self.trajectoriesstore[trajectorydataloc.trajectorystart] = trajectory_segments
