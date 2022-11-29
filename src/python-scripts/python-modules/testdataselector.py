@@ -49,6 +49,7 @@ class TestDataSelector:
 
             self.idsLists[startdata.roadid] = idList
 
+#trajectory_identifier: str
     def create_barefoot_data_from_list(self, idsList, graphroadnetwork):
         geometrydata = gData.GeometryData()
         graphnetwork = self.fix_max_speed(graphroadnetwork)
@@ -101,6 +102,63 @@ class TestDataSelector:
 
         data_path = "../../../data/"
         file_name = data_path + "road_" + "barefoot_data" + ".geojson"
+        # output = json.dumps(lines_as_single, separators=(',', ':'))
+        with open(file_name, 'w') as f:
+            json.dump(lines_as_single, f, separators=(',', ':'))
+            f.close()
+
+    def create_barefoot_data_from_listext(self, idsList, graphroadnetwork, trajectory_identifier: str):
+        geometrydata = gData.GeometryData()
+        graphnetwork = self.fix_max_speed(graphroadnetwork)
+        lines_as_single = list()
+        timestamp = datetime.utcnow()
+        dist = 0
+        prev = [0.0, 0, 0]
+
+        delta = timedelta(seconds=8)
+        for roadid in idsList:
+            gdf = graphnetwork[graphnetwork['id'].isin([roadid])]
+            coords_list = list()
+            time_list = list()
+            for road in gdf.itertuples():
+
+                dist = dist + road.length
+                speed_m_per_secs = (1000.0 * road.maxspeed) / 3600
+                travel_time = (dist / speed_m_per_secs)
+
+
+
+
+                geom_str = str(road.geometry)
+                geometry = shwkt.loads(geom_str)
+                geom = geometry.coords
+
+                for point in geom:
+                    coords_list.append((point[0], point[1]))
+                    time_list.append(timestamp)
+                reduced_coords_list = list()
+            for coord in coords_list:
+                if not geometrydata.pointsAreEqual(coord, prev):
+                    reduced_coords_list.append(coord) # no duplicate of
+                prev = coord
+
+            idx = 0
+
+            for coord in reduced_coords_list:
+                timestamp = (timestamp + delta)
+                print(road.id, " ", delta, " ", travel_time, " ", speed_m_per_secs, " ", road.length, " ", dist, " ",
+                      timestamp)
+                point = "POINT(" + str(coord[0]) + " " + str(coord[1]) + ")"
+                datapoint = {
+                    "point": point,
+                    "time": timestamp.strftime("%Y-%m-%d %H:%M:%S%Z") + "+0000",
+                    "id": "\\x0001"
+                }
+                lines_as_single.append(datapoint)
+                idx = idx + 1
+
+        data_path = "../../../data/"
+        file_name = data_path + "road_" + "barefoot_data_" + trajectory_identifier + ".geojson"
         # output = json.dumps(lines_as_single, separators=(',', ':'))
         with open(file_name, 'w') as f:
             json.dump(lines_as_single, f, separators=(',', ':'))

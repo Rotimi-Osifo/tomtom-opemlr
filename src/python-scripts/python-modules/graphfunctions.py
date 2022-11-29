@@ -1,7 +1,9 @@
 import geopandas as geopandas
+import random
+
 import segment
 import Node
-import graphfunctions as graphfxns
+
 
 class graphfunctions:
     def __init__(selfself):
@@ -44,6 +46,23 @@ class graphfunctions:
             if road.u == lastv: # lastv of the current segment
                 idslist.append(road.id)
         return idslist
+
+    def comparelengths(self, maingraphnetwork: geopandas, firstid: int, secondid: int):
+        gdffirst = maingraphnetwork[maingraphnetwork['id'].isin([firstid])]
+        gdfsecond = maingraphnetwork[maingraphnetwork['id'].isin([secondid])]
+
+        lengthfirst:float = 0.0
+        for road in gdffirst.itertuples():
+            lengthfirst = lengthfirst + (road.length)
+
+        lengthsecond: float = 0.0
+        for road2 in gdfsecond.itertuples():
+            lengthsecond = lengthsecond + (road2.length)
+
+        print("first length-:  ", lengthfirst, " secondlength-: ", lengthsecond, "first id-:  ", firstid, " secondid-: ", secondid)
+        if lengthsecond > lengthfirst:
+            return secondid
+        return firstid
 
     def getpath(self, graphnetwork: geopandas, currentsegmentid: int, endid: int) -> list: # uses graph functionality in the graph network
         forwartraversllist = list()
@@ -115,6 +134,8 @@ class graphfunctions:
 
         successors: list = self.getsuccessors(maingraphnetwork, lastv)
         if successors is None:
+            if  currentsegmentid == endid:
+                forwartraversllist.append(currentsegmentid)
             return forwartraversllist
         else:
             if len(successors) == 1:
@@ -124,20 +145,24 @@ class graphfunctions:
                 else:
                     return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwartraversllist)
             elif len(successors) == 2:
+                random.shuffle(successors)
                 succssorfirst = successors[0]
+                #succssorsecond = successors[1]
+                #successorid = self.comparelengths(maingraphnetwork, succssorfirst, succssorsecond)
                 forwartraversllist.append(succssorfirst)
 
                 if forwartraversllist.count(endid) >= 1:
                     return forwartraversllist
                 else:
-                    return self.forwardtraversalext(maingraphnetwork, succssorfirst, endid, forwartraversllist)
+                    return self.forwardtraversalext(maingraphnetwork, succssorfirst , endid, forwartraversllist)
 
-                sucessorsecond = successors[1]
-                forwartraversllist.append(sucessorsecond)
-                if forwartraversllist.count(endid) >= 1:
-                    return forwartraversllist
-                else:
-                    return self.forwardtraversalext(maingraphnetwork, sucessorsecond, endid, forwartraversllist)
+                #sucessorsecond = successors[1]
+                #forwartraversllist.append(sucessorsecond)
+                #if forwartraversllist.count(endid) >= 1:
+                #    return forwartraversllist
+                #else:
+                #    return self.forwardtraversalext(maingraphnetwork, sucessorsecond, endid, forwartraversllist)
+
         return forwartraversllist
 
     def forwardtraversal(self, preproceesedsegments: dict, currentsegmentid: int, endid: int, forwartraversllist: list):

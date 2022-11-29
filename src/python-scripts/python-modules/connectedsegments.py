@@ -100,17 +100,17 @@ class connectedsegments:
 
     def build_connected_segments(self, datastorforvisitedsets: dict, preprocessed_segments: dict):
 
-        re_preprocessedsegments = self.__reordernodesext(datastorforvisitedsets, preprocessed_segments)
+        ##re_preprocessedsegments = self.__reordernodesext(datastorforvisitedsets, preprocessed_segments)
         for key in datastorforvisitedsets.keys():
             visitedset: list = datastorforvisitedsets[key]
 
             for roadid in visitedset:
-                preprocessedsegment: segment.segment = re_preprocessedsegments[roadid]
+                preprocessedsegment: segment.segment = preprocessed_segments[roadid]
                 nodeslist: list = preprocessedsegment.nodes.nodeslist
                 incomingids = preprocessedsegment.predecessors
                 if len(incomingids) >= 1:
                     incomingid = incomingids[0]
-                    incomingseg: segment.segment = re_preprocessedsegments[incomingid]
+                    incomingseg: segment.segment = preprocessed_segments[incomingid]
                     print("build_connected_segments-: ", roadid, ", incoming", incomingid)
                     lastnode:nd.Node = self.get_last_node(incomingseg.nodes.nodeslist)
 
@@ -124,7 +124,7 @@ class connectedsegments:
                         endnode = node
                     preprocessedsegment.end = endnode.nodeId
                     preprocessedsegment.nodeslist.append(endnode)
-                    re_preprocessedsegments[roadid] = preprocessedsegment
+                    preprocessed_segments[roadid] = preprocessedsegment
                     preprocessedsegment.printsegment()
                 else:
                     firstnode: nd.Node = preprocessedsegment.nodes.nodeslist[0]
