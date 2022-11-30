@@ -95,10 +95,10 @@ class analyzer:
 
     def build_path(self,  test_graph: geopandas, trajectory_store_key: int) -> list:
         roadnetworkgraphsearchloc = roadnetworkgraphsearch.roadnetworkgraphsearch()
-        roadnetworkgraphsearchloc.buildconnectedsegmentsext(test_graph)
+        roadnetworkgraphsearchloc.buildconnectedsegmentsext(test_graph, trajectory_store_key)
         trajectoriestore:dict = roadnetworkgraphsearchloc.trajectoriesstore
         trajectory_:dict = trajectoriestore[trajectory_store_key]
-        trajectory_start_segment:segment.segment = trajectory_[trajectory_store_key]
+        trajectory_start_segment: segment.segment = trajectory_[trajectory_store_key]
         trajectory_path_list:list = trajectory_start_segment.successors
         trajectory_path_list.insert(0, trajectory_store_key)
         return trajectory_path_list

@@ -72,7 +72,7 @@ class graphprocessor:
                 self.preprocessed_segments[road.id] = seg
                 prev_roadid = road.id
 
-    def preprocessext(self, graphnetwork, startid:int, endid: int) -> dict:  # uses graph functionality in the graph network
+    def preprocessext(self, graphnetwork, startid:int, endid: int, lanedirection: int) -> dict:  # uses graph functionality in the graph network
         geometrydata = gData.GeometryData()
         preprocessed_segments = dict()
 
@@ -104,6 +104,7 @@ class graphprocessor:
 
             reduced_coords_list = list()
             prev = [0.0, 0, 0]
+            print("start of logging: roadid-: ", roadid, ", coord_cnt-: ", coord_cnt)
             for coord in coords_list:
                 if not geometrydata.pointsAreEqual(coord, prev):
                     coord_cnt = coord_cnt + 1
@@ -116,6 +117,7 @@ class graphprocessor:
                     reduced_coords_list.append(coord)
                      # print("current id-: ", road.id, ", cnt-: ", cnt, ", cord_cnt-: ", coord_cnt, ", len(coords_list) -:", len(coords_list))
                     prev = coord
+            print("end of logging: roadid-: ", roadid, ", coord_cnt-: ", coord_cnt)
 
             linegeom = LineString(reduced_coords_list)
             seg.geometry = linegeom
@@ -129,6 +131,7 @@ class graphprocessor:
             seg.nodes = nodes
             seg.setFow(highway)
             seg.setFrc(highway)
+            seg.direction = lanedirection
             seg.maxspeed = CummulativeDistanceAndTime.road_class_to_kmph(highway)
             # print("incoming line id-: ", seg.incoming, ", current line id-: ", seg.id, ", out going line id-:  ", seg.outgoing, ", length-: ", seg.length)
             preprocessed_segments[roadid] = seg

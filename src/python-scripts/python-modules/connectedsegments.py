@@ -139,9 +139,40 @@ class connectedsegments:
                     preprocessedsegment.printsegment()
         return  preprocessed_segments
 
+    def buildconnectedsegmentsext(self, preprocessed_segments: dict, trajectory_path_list: list):
 
+        for trajectory_path_id in trajectory_path_list:
+            preprocessedsegment: segment.segment = preprocessed_segments[trajectory_path_id]
 
+            predecessors: list = preprocessedsegment.predecessors
+            nodeslist: list = preprocessedsegment.nodes.nodeslist
+            if len(predecessors) >= 1:
+                predecessorid = predecessors[0] # closest predecessor
+                predecessorseg: segment.segment = preprocessed_segments[predecessorid]
+                print("build_connected_segments-: ", trajectory_path_id, ", incoming", predecessorid)
+                lastnode: nd.Node = self.get_last_node(predecessorseg.nodes.nodeslist)
 
+                preprocessedsegment.nodeslist.append(lastnode)
+                preprocessedsegment.start = lastnode.nodeId
+                endnode: nd.Node = None
+                node_cnt = lastnode.nodeId
+                for node in nodeslist:
+                    node.setNodeId(node_cnt)
+                    node_cnt = node_cnt + 1
+                    endnode = node
+                preprocessedsegment.end = endnode.nodeId
+                preprocessedsegment.nodeslist.append(endnode)
+                preprocessed_segments[trajectory_path_id] = preprocessedsegment
+                preprocessedsegment.printsegment()
+            else:
+                firstnode: nd.Node = preprocessedsegment.nodes.nodeslist[0]
 
+                lastnode: nd.Node = self.get_last_node(preprocessedsegment.nodes.nodeslist)
 
-
+                preprocessedsegment.nodeslist.append(firstnode)
+                preprocessedsegment.nodeslist.append(lastnode)
+                preprocessedsegment.start = firstnode.nodeId
+                preprocessedsegment.end = lastnode.nodeId
+                preprocessed_segments[trajectory_path_id] = preprocessedsegment
+                preprocessedsegment.printsegment()
+        return preprocessed_segments
