@@ -330,13 +330,9 @@ class roadnetworkgraphsearch:
                                                               trajectorydataloc.lanedirection
                                                               )
 
-        # self.visitedset = list()
-        # self.__createconnectedsegmentsext(trajectory_segments, trajectorydataloc.trajectorystart, trajectorydataloc.lanedirection)
-        # print(self.visitedset)
-
         trajectory_start_segment: segment.segment = trajectory_segments[trajectorydataloc.trajectorystart]
         trajectory_path_list: list = trajectory_start_segment.successors
-        trajectory_path_list.insert(0, trajectorydataloc.trajectorystart)
+        #trajectory_path_list.insert(0, trajectorydataloc.trajectorystart)
 
         connected_segments = connectedsegments.connectedsegments()
         re_initialized_trajectory_segments = connected_segments.buildconnectedsegmentsext(trajectory_segments,
