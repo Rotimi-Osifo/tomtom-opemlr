@@ -20,22 +20,22 @@ class roadnetworkgraphsearch:
     def __getstartdata(self) -> dict:
         self.trajectorydatalist = dict()
 
-        trajectorydataloc = trajectorydata.trajectorydata(4040302, 1, "map_data_as_geojson_" + str(4040302), "E 6",
+        trajectorydataloc = trajectorydata.trajectorydata(4040302, 1, "map_data_as_geojson_" + str(4040302), "E6",
                                                      168975966)
         self.trajectorydatalist[4040302] = trajectorydataloc
-        trajectorydataloc = trajectorydata.trajectorydata(4040443, 2, "map_data_as_geojson_" + str(4040443), "E 6",
+        trajectorydataloc = trajectorydata.trajectorydata(4040443, 2, "map_data_as_geojson_" + str(4040443), "E6",
                                                       284402024)
         self.trajectorydatalist[4040443] = trajectorydataloc
-        trajectorydataloc = trajectorydata.trajectorydata(237772646, 1, "map_data_as_geojson_" + str(237772646), "E 45",
+        trajectorydataloc = trajectorydata.trajectorydata(237772646, 1, "map_data_as_geojson_" + str(237772646), "E45",
                                                       1023578391)
         self.trajectorydatalist[237772646] = trajectorydataloc
-        trajectorydataloc = trajectorydata.trajectorydata(117090882, 2, "map_data_as_geojson_" + str(117090882), "E 45",
+        trajectorydataloc = trajectorydata.trajectorydata(117090882, 2, "map_data_as_geojson_" + str(117090882), "E45",
                                                       237772647)
         self.trajectorydatalist[117090882] = trajectorydataloc
-        trajectorydataloc = trajectorydata.trajectorydata(10275796, 1, "map_data_as_geojson_" + str(10275796), "E 20",
+        trajectorydataloc = trajectorydata.trajectorydata(10275796, 1, "map_data_as_geojson_" + str(10275796), "E20",
                                                       4040484)
         self.trajectorydatalist[10275796] = trajectorydataloc
-        trajectorydataloc = trajectorydata.trajectorydata(4040439, 2, "map_data_as_geojson_" + str(4040439), "E 20",
+        trajectorydataloc = trajectorydata.trajectorydata(4040439, 2, "map_data_as_geojson_" + str(4040439), "E20",
                                                      297042452)
         self.trajectorydatalist[4040439] = trajectorydataloc
 
@@ -322,7 +322,7 @@ class roadnetworkgraphsearch:
     def buildconnectedsegmentsext(self, graphnetwork, trajectory_store_key: int):
 
         self.__getstartdata()
-        trajectorydataloc = self.trajectorydatalist[trajectory_store_key]
+        trajectorydataloc:  trajectorydata.trajectorydata = self.trajectorydatalist[trajectory_store_key]
         segment_processor = graphprocessor.graphprocessor()
         trajectory_segments = segment_processor.preprocessext(graphnetwork,
                                                               trajectorydataloc.trajectorystart,
@@ -331,8 +331,8 @@ class roadnetworkgraphsearch:
                                                               )
 
         trajectory_start_segment: segment.segment = trajectory_segments[trajectorydataloc.trajectorystart]
-        trajectory_path_list: list = trajectory_start_segment.successors
-        #trajectory_path_list.insert(0, trajectorydataloc.trajectorystart)
+        trajectory_path_list: list = list(trajectory_start_segment.successors)
+        trajectory_path_list.insert(0, trajectorydataloc.trajectorystart)
 
         connected_segments = connectedsegments.connectedsegments()
         re_initialized_trajectory_segments = connected_segments.buildconnectedsegmentsext(trajectory_segments,
@@ -343,9 +343,12 @@ class roadnetworkgraphsearch:
                                                                      re_initialized_trajectory_segments)
 
         data_path = "../../../data/"
-        featurecollectiondata.writeCollection(data_path + trajectorydataloc.mapfilename + ".geojson",
-                                              featurecollectiondata.all_collection)
-        featurecollectiondata.writeCollection(data_path + trajectorydataloc.mapfilename + ".json",
-                                              featurecollectiondata.all_collection)
+        featurecollectiondata.writeCollection(
+            data_path + trajectorydataloc.mapfilename + "_" + trajectorydataloc.ref + ".geojson",
+            featurecollectiondata.all_collection)
+
+        featurecollectiondata.writeCollection(
+            data_path + trajectorydataloc.mapfilename + "_" + trajectorydataloc.ref + ".json",
+            featurecollectiondata.all_collection)
 
         self.trajectoriesstore[trajectorydataloc.trajectorystart] = re_initialized_trajectory_segments

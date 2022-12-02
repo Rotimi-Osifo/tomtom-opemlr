@@ -8,6 +8,7 @@ import filterfunctions
 import barefootoutput
 import dekoderoutput
 import segment
+import fileutilities
 
 from testdataselector import TestDataSelector
 
@@ -30,23 +31,33 @@ class analyzer:
         testdataselector_barefoot.create_barefoot_data_from_listext(trajectory_path_list, graphnetwork, trajectory_identifier)
 
     def get_barefoot_output_coordinates_lat_first(self, keyfordataset: int) -> list: # coordinates_name = barefootoutput.coordinates_*
-        return barefootoutput.get_output_as_flattened_lat_first(keyfordataset)
+        file_utilities = fileutilities.fileutilities()
+        barefootoutjsondata = file_utilities.getbarefootoutput(keyfordataset)
+        return barefootoutput.getoutputasflattenedlatfirst(barefootoutjsondata)
 
     def get_barefoot_output_coordinates_lng_first(self, keyfordataset: int) -> list: # coordinates_name = barefootoutput.coordinates_*
-        return barefootoutput.get_output_as_flattened_lng_first(keyfordataset)
+        file_utilities = fileutilities.fileutilities()
+        barefootoutjsondata = file_utilities.getbarefootoutput(keyfordataset)
+        return barefootoutput.getoutputasflattenedlngfirst(barefootoutjsondata)
 
     def getdecodertrajectorycoordinates(self, keyfordataset: int) -> list:
-        dekoderoutputjson = dekoderoutput.getdecodertrajectorycoordinates(keyfordataset)
+
+        file_utilities = fileutilities.fileutilities()
+        dekoderoutputjson = file_utilities.getdecoderoutput(keyfordataset)
 
         lineStringData = LineStringData.LineStringData()
         lineStringData.get_linestring_from_wkt_strings(dekoderoutputjson)
+
         return lineStringData.all_coords_from_wkt
 
     def getdecodertrajectorycoordinates_lng_first(self, keyfordataset: int) -> list:
-        dekoderoutputjson = dekoderoutput.getdecodertrajectorycoordinates(keyfordataset)
+
+        file_utilities = fileutilities.fileutilities()
+        dekoderoutputjson = file_utilities.getdecoderoutput(keyfordataset)
 
         lineStringData = LineStringData.LineStringData()
         lineStringData.get_linestring_from_wkt_strings(dekoderoutputjson)
+
         return lineStringData.all_coords_from_wkt_lng_first
 
 
@@ -99,7 +110,8 @@ class analyzer:
         trajectoriestore:dict = roadnetworkgraphsearchloc.trajectoriesstore
         trajectory_:dict = trajectoriestore[trajectory_store_key]
         trajectory_start_segment: segment.segment = trajectory_[trajectory_store_key]
-        trajectory_path_list:list = trajectory_start_segment.successors
+
+        trajectory_path_list:list = list(trajectory_start_segment.successors)
         trajectory_path_list.insert(0, trajectory_store_key)
         return trajectory_path_list
 

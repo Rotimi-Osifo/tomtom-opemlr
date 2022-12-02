@@ -1,3 +1,5 @@
+import json
+
 barefoot = {
     "coordinates": [
         [
@@ -14543,6 +14545,26 @@ def get_output_as_flattened_lat_first(keyfordataset: int) -> list: #just flatten
         for segmenttupples in coordinates_lng_first:
             for point in segmenttupples:
                 barefootroad.append((point[1], point[0]))
+        return barefootroad
+    return None
+
+def getoutputasflattenedlatfirst(barefootoutjsondata: json) -> list: #just flatten
+    coordinates_lng_first = barefootoutjsondata["coordinates"]
+    if coordinates_lng_first is not None:
+        barefootroad = list()
+        for segmenttupples in coordinates_lng_first:
+            for point in segmenttupples:
+                barefootroad.append((point[1], point[0]))
+        return barefootroad
+    return None
+
+def getoutputasflattenedlngfirst(barefootoutjsondata: json) -> list: #just flatten
+    coordinates_lng_first = barefootoutjsondata["coordinates"]
+    if coordinates_lng_first is not None:
+        barefootroad = list()
+        for segmenttupples in coordinates_lng_first:
+            for point in segmenttupples:
+                barefootroad.append((point[0], point[1]))
         return barefootroad
     return None
 
