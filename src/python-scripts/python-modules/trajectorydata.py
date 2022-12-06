@@ -1,3 +1,5 @@
+
+
 class trajectorydata:
     def __init__(self, trajectorystart: int, lanedirection: int, mapfilename: str, ref: str, trajectoryend: int):
         self.trajectorystart = trajectorystart
@@ -6,8 +8,4 @@ class trajectorydata:
         self.ref = ref
         self.trajectoryend = trajectoryend
 
-    # def __init__(self, roadid, lanedirection):
-    #     self.roadid = roadid
-    #     self.lanedirection = lanedirection
-    #     self.mapfilename = None
 

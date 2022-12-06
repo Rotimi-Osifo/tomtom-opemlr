@@ -352,3 +352,35 @@ class roadnetworkgraphsearch:
             featurecollectiondata.all_collection)
 
         self.trajectoriesstore[trajectorydataloc.trajectorystart] = re_initialized_trajectory_segments
+
+    def buildconnected_segments(self, graphnetwork, trajectoryData :trajectorydata.trajectorydata):
+
+        segment_processor = graphprocessor.graphprocessor()
+        trajectory_segments = segment_processor.preprocessext(graphnetwork,
+                                                              trajectoryData.trajectorystart,
+                                                              trajectoryData.trajectoryend,
+                                                              trajectoryData.lanedirection
+                                                              )
+
+        trajectory_start_segment: segment.segment = trajectory_segments[trajectoryData.trajectorystart]
+        trajectory_path_list: list = list(trajectory_start_segment.successors)
+        trajectory_path_list.insert(0, trajectoryData.trajectorystart)
+
+        connected_segments = connectedsegments.connectedsegments()
+        re_initialized_trajectory_segments = connected_segments.buildconnectedsegmentsext(trajectory_segments,
+                                                                                          trajectory_path_list)
+
+        featurecollectiondata = fcData.FeatureCollectionData()
+        featurecollectiondata.createCollectionsFromConnectedSegments(trajectory_path_list,
+                                                                     re_initialized_trajectory_segments)
+
+        data_path = "../../../data/"
+        featurecollectiondata.writeCollection(
+            data_path + trajectoryData.mapfilename + "_" + trajectoryData.ref + ".geojson",
+            featurecollectiondata.all_collection)
+
+        featurecollectiondata.writeCollection(
+            data_path + trajectoryData.mapfilename + "_" + trajectoryData.ref + ".json",
+            featurecollectiondata.all_collection)
+
+        self.trajectoriesstore[trajectoryData.trajectorystart] = re_initialized_trajectory_segments
