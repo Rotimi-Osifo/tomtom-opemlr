@@ -7,5 +7,6 @@ class trajectorydata:
         self.mapfilename = mapfilename
         self.ref = ref
         self.trajectoryend = trajectoryend
+        print("geojsonfilename-: ",  self.mapfilename)
 
 

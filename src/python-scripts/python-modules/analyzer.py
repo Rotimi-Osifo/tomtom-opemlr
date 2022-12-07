@@ -8,6 +8,7 @@ import filterfunctions
 import barefootoutput
 import segment
 import fileutilities
+import trajectorybuilder
 import trajectory
 
 from testdataselector import TestDataSelector
@@ -116,9 +117,11 @@ class analyzer:
         trajectory_path_list.insert(0, trajectory_store_key)
         return trajectory_path_list
 
-    def build_pathext(self, graphnetwork: geopandas, startid:  int, endid: int, direction: int, highwayref: str) -> list:
-        trajectoryloc: trajectory.trajectory = trajectory.trajectory()
-        return trajectoryloc.buildpathbyhighwayref(graphnetwork, startid, endid, direction, highwayref)
+    def build_pathext(self, graphnetwork: geopandas, startid: int, endid: int, direction: int, highwayref: str,
+                      name: str) -> trajectory.trajectory:
+
+        trajectorybuilderloc: trajectorybuilder.trajectorybuilder = trajectorybuilder.trajectorybuilder()
+        return trajectorybuilderloc.buildpathbyhighwayref(graphnetwork, startid, endid, direction, highwayref, name)
 
     def get_visited_set_for_key_set(self, \
                                     roadnetwork_graphsearch: roadnetworkgraphsearch.roadnetworkgraphsearch,\
