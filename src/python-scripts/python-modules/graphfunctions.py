@@ -107,24 +107,24 @@ class graphfunctions:
             return tracebacklist
         else:
             if len(predecessors) == 1:
+                tracebacklist.append(predecessors[0])
                 if tracebacklist.count(startid) >= 1:
                     return tracebacklist
                 else:
-                    tracebacklist.append(predecessors[0])
                     return self.tracebacktrajectoryext(maingraphnetwork, predecessors[0], startid, tracebacklist)
             elif len(predecessors) == 2:
                 predecessorfirst = predecessors[0]
+                tracebacklist.append(predecessorfirst)
                 if tracebacklist.count(startid) >= 1:
                     return tracebacklist
                 else:
-                    tracebacklist.append(predecessorfirst)
                     return self.tracebacktrajectoryext(maingraphnetwork, predecessorfirst, startid, tracebacklist)
 
                 predecessorsecond = predecessors[1]
+                tracebacklist.append(predecessorsecond)
                 if tracebacklist.count(startid) >= 1:
                     return tracebacklist
                 else:
-                    tracebacklist.append(predecessorsecond)
                     return self.tracebacktrajectoryext(maingraphnetwork, predecessorsecond, startid, tracebacklist)
         return tracebacklist
 
