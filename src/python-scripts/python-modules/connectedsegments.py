@@ -147,7 +147,7 @@ class connectedsegments:
             predecessors: list = preprocessedsegment.predecessors
             nodeslist: list = preprocessedsegment.nodes.nodeslist
             if len(predecessors) >= 1:
-                predecessorid = predecessors[0] # closest predecessor
+                predecessorid = predecessors[0]  # closest predecessor
                 predecessorseg: segment.segment = preprocessed_segments[predecessorid]
                 print("build_connected_segments-: ", trajectory_path_id, ", incoming", predecessorid)
                 lastnode: nd.Node = self.get_last_node(predecessorseg.nodes.nodeslist)
@@ -175,4 +175,5 @@ class connectedsegments:
                 preprocessedsegment.end = lastnode.nodeId
                 preprocessed_segments[trajectory_path_id] = preprocessedsegment
                 preprocessedsegment.printsegment()
+
         return preprocessed_segments

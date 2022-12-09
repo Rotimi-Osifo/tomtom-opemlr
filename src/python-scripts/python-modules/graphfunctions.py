@@ -29,16 +29,17 @@ class graphfunctions:
         for seg in gdf.itertuples():
             return seg.u
 
-    def getpredecessors(self, graphnetwork: geopandas, firstu) -> list: # uses graph functionality in the graph network
+    def getpredecessors(self, graphnetwork: geopandas, firstu, path: list) -> list: # uses graph functionality in the graph network
         idslist = list()
         for road in graphnetwork.itertuples():
             if road.v == firstu: # firstu of the current segment
-                idslist.append(road.id)
+                if path.count(road.id) >= 1:
+                    idslist.append(road.id)
         return idslist
 
-    def getreversepath(self, graphnetwork: geopandas, currentsegmentid: int, startid: int) -> list:  # uses graph functionality in the graph network
+    def getreversepath(self, graphnetwork: geopandas, currentsegmentid: int, startid: int, path:list) -> list:  # uses graph functionality in the graph network
         tracebacklist = list()
-        return self.tracebacktrajectoryext(graphnetwork, currentsegmentid,  startid, tracebacklist)
+        return self.tracebacktrajectoryext(graphnetwork, currentsegmentid,  startid, path, tracebacklist)
 
     def getsuccessors(self, graphnetwork: geopandas, lastv) -> list: # uses graph functionality in the graph network
         idslist = list()
@@ -97,13 +98,15 @@ class graphfunctions:
                 else:
                     return self.tracebacktrajectory(preproceesedsegments, predecessorsecond, startid, tracebacklist)
 
-    def tracebacktrajectoryext(self, maingraphnetwork, currentsegmentid: int, startid: int, tracebacklist: list):
+    def tracebacktrajectoryext(self, maingraphnetwork, currentsegmentid: int, startid: int, path: list, tracebacklist: list):
         gdf = maingraphnetwork[maingraphnetwork['id'].isin([currentsegmentid])]
         firstu: int = self.get_first_u(gdf)
 
-        predecessors: list = self.getpredecessors(maingraphnetwork, firstu)
+        predecessors: list = self.getpredecessors(maingraphnetwork, firstu, path)
 
         if predecessors is None:
+            if currentsegmentid == startid:
+                tracebacklist.append(currentsegmentid)
             return tracebacklist
         else:
             if len(predecessors) == 1:
@@ -111,21 +114,25 @@ class graphfunctions:
                 if tracebacklist.count(startid) >= 1:
                     return tracebacklist
                 else:
-                    return self.tracebacktrajectoryext(maingraphnetwork, predecessors[0], startid, tracebacklist)
+                    return self.tracebacktrajectoryext(maingraphnetwork, predecessors[0], startid, path, tracebacklist)
             elif len(predecessors) == 2:
                 predecessorfirst = predecessors[0]
                 tracebacklist.append(predecessorfirst)
                 if tracebacklist.count(startid) >= 1:
+                    print("predecessorfirst - inside return -:", predecessorfirst)
                     return tracebacklist
                 else:
-                    return self.tracebacktrajectoryext(maingraphnetwork, predecessorfirst, startid, tracebacklist)
+                    print("predecessorfirst - inside recursion -:", predecessorfirst)
+                    return self.tracebacktrajectoryext(maingraphnetwork, predecessorfirst, startid, path, tracebacklist)
 
                 predecessorsecond = predecessors[1]
                 tracebacklist.append(predecessorsecond)
                 if tracebacklist.count(startid) >= 1:
+                    print("predecessorsecond - inside return -:", predecessorsecond)
                     return tracebacklist
                 else:
-                    return self.tracebacktrajectoryext(maingraphnetwork, predecessorsecond, startid, tracebacklist)
+                    print("predecessorsecond - inside recursion -:", predecessorsecond)
+                    return self.tracebacktrajectoryext(maingraphnetwork, predecessorsecond, startid, path, tracebacklist)
         return tracebacklist
 
     def forwardtraversalext(self, maingraphnetwork, currentsegmentid: int, endid: int, forwardtraversallist: list):
@@ -145,9 +152,7 @@ class graphfunctions:
                 else:
                     return self.forwardtraversalext(maingraphnetwork, successors[0], endid, forwardtraversallist)
             elif len(successors) == 2:
-                #random.shuffle(successors)
                 succssorfirst = successors[0]
-                #successorid = self.comparelengths(maingraphnetwork, succssorfirst, succssorsecond)
                 forwardtraversallist.append(succssorfirst)
 
                 if forwardtraversallist.count(endid) >= 1:

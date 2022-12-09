@@ -124,7 +124,7 @@ class graphprocessor:
             seg.lastv = graphfuncs.get_last_v(gdf)
             seg.firstu = graphfuncs.get_first_u(gdf)
             seg.successors = graphfuncs.getpath(graphnetwork, roadid, endid) #(graphnetwork, seg.lastv)  # outgoing segment from the current
-            seg.predecessors = graphfuncs.getreversepath(graphnetwork, roadid, startid)  # incoming segment to the current
+            seg.predecessors = graphfuncs.getreversepath(graphnetwork, roadid, startid, path)  # incoming segment to the current
             seg.length = length
             seg.cumDist = cumdistance
             seg.id = roadid
