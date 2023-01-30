@@ -78,3 +78,10 @@ class GeometryData:
                 line_list.append((point[0], point[1]))
         return LineString(line_list)
 
+    def get_coords_shapely_lat_first(self, shapelycoords) -> list:
+        line_list = list()
+        for point in shapelycoords:
+                line_list.append((point[1], point[0]))
+        return line_list
+
+

@@ -1,3 +1,5 @@
+from typing import List
+
 import geopandas
 
 import RoadNetworkManager as nManager
@@ -10,6 +12,8 @@ import segment
 import fileutilities
 import trajectorybuilder
 import trajectory
+
+from geopy.distance import geodesic
 
 from testdataselector import TestDataSelector
 
@@ -130,5 +134,34 @@ class analyzer:
         datastore = roadnetwork_graphsearch.datastore
         return datastore[keyfordataset]
 
+    def get_distance_between(self, first, second):
+        return geodesic(first, second).m
 
+    def calculate_distances(self):
 
+        start_lat: float = 57.708870
+        start_lng: float = 11.974560
+        tolerances: List = [1E-1, 1E-2, 1E-3, 1E-4, 1E-5, 1E-6, 1E-7, 1E-8, 1E-9, 1E-10, 1E-11]
+
+        for tolerance in tolerances:
+
+            first = (start_lat, start_lng)
+
+            end_lat : float= start_lat + tolerance
+            end_lng : float= start_lng + tolerance
+            second = (end_lat, end_lng)
+
+            distance = self.get_distance_between(first, second)
+            print("(start_lat: , start_lng: ) = ", "(", start_lat, start_lng, ")", "epsilon in degrees = ", tolerance,  "(end_lat: , end_lng: ) = ", "(",
+                  end_lat, end_lng, ")", "distance in metres = ", distance)
+
+    def find_diff(self, first: list, second: list):
+        idx: int = 0
+        while idx < len(first):
+            first_point = first[idx]
+            second_point = second[idx]
+
+            distance = self.get_distance_between((first_point[1], first_point[0]), (second_point[1], second_point[0]))
+            print("first coordinate: ", "(", first_point[0], first_point[1], ")", "second coordinate: ", "(", second_point[0], second_point[1], ")")
+            print("lng diff: ", abs(first_point[0] - second_point[0]), "lat diff: ", abs(first_point[1] - second_point[1]), "distance: ", distance)
+            idx = idx + 1

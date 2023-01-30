@@ -1,4 +1,4 @@
-import EnrichedCoordinate
+import Coordinate
 import shapely.wkt
 class  EnrichedCoordinates:
     def __init__(self):
@@ -13,12 +13,12 @@ class  EnrichedCoordinates:
             geom_str = str(road.geometry)
             geometry = shapely.wkt.loads(geom_str)
             geom = geometry.coords
-            enrichedCoordinate = EnrichedCoordinate.EnrichedCoordinate()
-            for point in geom:
-                enrichedCoordinate.long = point[0]
-                enrichedCoordinate.lat = point[1]
-            dist = dist + road.length
-            enrichedCoordinate.dist = dist
+            #enrichedCoordinate = EnrichedCoordinate.EnrichedCoordinate()
+            #for point in geom:
+            #    enrichedCoordinate.long = point[0]
+            #    enrichedCoordinate.lat = point[1]
+            #dist = dist + road.length
+            #enrichedCoordinate.dist = dist
 
 
 
