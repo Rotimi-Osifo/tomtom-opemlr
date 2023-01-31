@@ -106,6 +106,14 @@ class analyzer:
         filterfxns = filterfunctions.filterfunctions()
         return filterfxns.filterRoadNetworkWithRef(maingraphnetwork, [highwayref])
 
+    def buildbase_data_with_list(self, maingraphnetwork: geopandas, reflist: list) -> geopandas:
+        filterfxns = filterfunctions.filterfunctions()
+        return filterfxns.filterRoadNetworkWithRef(maingraphnetwork, reflist)
+
+    def buildbase_data_for_network(self, maingraphnetwork: geopandas, reflist: list) -> geopandas:
+        filterfxns = filterfunctions.filterfunctions()
+        return filterfxns.filterRoadNetworkWithRefAndName(maingraphnetwork, reflist)
+
     def build_visited_set(self,  test_graph: geopandas):
         roadNetworkManager_graph_builder: nManager.RoadNetworkManager = nManager.RoadNetworkManager()
         return roadNetworkManager_graph_builder.buidConnectedSegmentsFromGraph(test_graph)

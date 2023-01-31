@@ -26,6 +26,11 @@ class filterfunctions:
         return (rNetwork[(rNetwork['ref'].isin(roadreflist))]
         )
 
+    def filterRoadNetworkWithRefAndName(self, rNetwork: geopandas, roadreflist: list) -> geopandas:
+        return (rNetwork[(rNetwork['ref'].isin(roadreflist)) |
+                         (rNetwork['name'].isin(roadreflist))]
+        )
+
     def filterRoadNetworkWithId(self, rNetwork: geopandas, roadidlist: list) -> geopandas:
         return (rNetwork[(rNetwork['id'].isin(roadidlist))]
         )
