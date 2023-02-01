@@ -28,7 +28,9 @@ class filterfunctions:
 
     def filterRoadNetworkWithRefAndName(self, rNetwork: geopandas, roadreflist: list) -> geopandas:
         return (rNetwork[(rNetwork['ref'].isin(roadreflist)) |
-                         (rNetwork['name'].isin(roadreflist))]
+                         (rNetwork['name'].isin(roadreflist)) |
+                         (rNetwork['id'].isin(cData.road_id_list))
+        ]
         )
 
     def filterRoadNetworkWithId(self, rNetwork: geopandas, roadidlist: list) -> geopandas:

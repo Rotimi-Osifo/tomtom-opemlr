@@ -1,0 +1,4 @@
+curl -X POST -H "Content-Type: application/encodedLocationReference+avro" \
+    -d '{"base64EncodedLocation":"CwiL/ikllAEx//hlzIoKMf7qSt7BCidJG+//4QoV"}' \
+    -o decoder_out_vehicle_client_data.txt \
+    http://localhost:34667/openlr/decode

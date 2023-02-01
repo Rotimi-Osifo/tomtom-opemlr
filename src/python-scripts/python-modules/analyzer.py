@@ -1,6 +1,7 @@
 from typing import List
 
 import geopandas
+import geopy.distance
 
 import RoadNetworkManager as nManager
 import roadnetworkgraphsearch
@@ -142,7 +143,12 @@ class analyzer:
         datastore = roadnetwork_graphsearch.datastore
         return datastore[keyfordataset]
 
+    def write_data_file_for_vehicle_client(self, coordinates: list):
+        file_utilities = fileutilities.fileutilities()
+        file_utilities.write_data_file_for_vehicle_client(coordinates)
+
     def get_distance_between(self, first, second):
+        geopy.location.Location.
         return geodesic(first, second).m
 
     def calculate_distances(self):
