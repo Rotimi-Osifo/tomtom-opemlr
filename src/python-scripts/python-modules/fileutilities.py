@@ -26,8 +26,8 @@ class fileutilities:
         except FileNotFoundError:
             print('The file -: ', filepath, " does not exist")
 
-    def write_data_file_for_vehicle_client(self, coordinates: list):
-        filepath: str = self.data_path + 'slinga_with_e45.data'
+    def write_data_file_for_vehicle_client(self, coordinates: list, file_name: str):
+        filepath: str = self.data_path + file_name +'.data'
 
         try:
             with open(filepath, 'a') as f:
