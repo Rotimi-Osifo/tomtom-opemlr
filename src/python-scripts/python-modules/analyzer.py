@@ -114,6 +114,10 @@ class analyzer:
         filterfxns = filterfunctions.filterfunctions()
         return filterfxns.filterRoadNetworkWithRefAndName(maingraphnetwork, reflist)
 
+    def buildbase_data_for_network_ext(self, maingraphnetwork: geopandas, road_id_list: list, reflist: list) -> geopandas:
+        filterfxns = filterfunctions.filterfunctions()
+        return filterfxns.filterRoadNetworkWithRefAndNameExt(maingraphnetwork, road_id_list, reflist)
+
     def build_visited_set(self,  test_graph: geopandas):
         roadNetworkManager_graph_builder: nManager.RoadNetworkManager = nManager.RoadNetworkManager()
         return roadNetworkManager_graph_builder.buidConnectedSegmentsFromGraph(test_graph)

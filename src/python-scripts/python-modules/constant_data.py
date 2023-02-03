@@ -19,7 +19,7 @@ selected_road_names = ["Oscarsleden", "Andréegatan", "Götatunneln", "Mårten K
 road_ref_list = ["E 6;E 20", "E 6;E 21", "E 45;E 21", "E 6.21", "E 6", "E 20", "E 45", "O 533", "O 514", "O 518"]
 
 road_id_list = [10906540, 4267338, 10958242, 361204263, 806960324, 296093130, 4267464, 10906540, 296093116,
-                10905540, 806960321]
+                10905540, 806960321, 10958248]
 
 osm_road_type_list = ["motorway_link", "motorway", "trunk_link", "trunk", "residential", "primary", "secondary", "tertiary"]
 
