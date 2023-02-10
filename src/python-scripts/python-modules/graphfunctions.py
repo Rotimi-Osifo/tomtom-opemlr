@@ -1,7 +1,8 @@
 import geopandas as geopandas
-import random
 
 import segment
+import utilities
+
 import Node
 
 
@@ -68,6 +69,36 @@ class graphfunctions:
     def getpath(self, graphnetwork: geopandas, currentsegmentid: int, endid: int) -> list: # uses graph functionality in the graph network
         forwartraversllist = list()
         return self.forwardtraversalext(graphnetwork, currentsegmentid, endid, forwartraversllist)
+
+    def successors_from_path(self, path: list, roadid: int, endid: int):
+
+        if roadid == endid:
+            return None # No more successor
+
+        idx: int = utilities.get_index_of_item_from_list(path, roadid)
+
+        successors: list = list()
+
+        idx = idx + 1 # step forward # over the index for the curret road id
+        while idx < len(path):
+            successors.append(path[idx])
+            idx = idx + 1
+
+        return successors
+
+    def predecessors_from_path(self, path: list, roadid: int, startid:int):
+
+        if startid == roadid:
+            return None # no predecessors
+
+        predecessors: list = list()
+        idx: int = utilities.get_index_of_item_from_list(path, roadid)
+        idx = idx - 1  # step backwards over the index for the curret road id
+        while idx >= 0:
+            predecessors.append(path[idx])
+            idx = idx - 1
+
+        return predecessors
 
     def tracebacktrajectory(self, preproceesedsegments: dict, currentsegmentid: int, startid: int, tracebacklist: list):
 
@@ -140,6 +171,10 @@ class graphfunctions:
         lastv :int = self.get_last_v(gdf)
 
         successors: list = self.getsuccessors(maingraphnetwork, lastv)
+
+        #if currentsegmentid == 1060974763:
+
+        #print("current id -: ", currentsegmentid, "endid -: ", endid, "len successors -: ", len( successors))
         if successors is None:
             if  currentsegmentid == endid:
                 forwardtraversallist.append(currentsegmentid)

@@ -114,9 +114,10 @@ class analyzer:
         filterfxns = filterfunctions.filterfunctions()
         return filterfxns.filterRoadNetworkWithRefAndName(maingraphnetwork, reflist)
 
-    def buildbase_data_for_network_ext(self, maingraphnetwork: geopandas, road_id_list: list, reflist: list) -> geopandas:
+    def buildbase_data_for_network_ext(self, maingraphnetwork: geopandas, road_id_list: list, reflist: list,
+                                       names: list) -> geopandas:
         filterfxns = filterfunctions.filterfunctions()
-        return filterfxns.filterRoadNetworkWithRefAndNameExt(maingraphnetwork, road_id_list, reflist)
+        return filterfxns.filterRoadNetworkWithRefAndNameExt(maingraphnetwork, road_id_list, reflist, names)
 
     def build_visited_set(self,  test_graph: geopandas):
         roadNetworkManager_graph_builder: nManager.RoadNetworkManager = nManager.RoadNetworkManager()
@@ -138,6 +139,11 @@ class analyzer:
 
         trajectorybuilderloc: trajectorybuilder.trajectorybuilder = trajectorybuilder.trajectorybuilder()
         return trajectorybuilderloc.buildpathbyhighwayref(graphnetwork, startid, endid, direction, highwayref, name)
+
+    def build_path_from_connected_paths(self, graphnetwork: geopandas, paths_data: list, path_name:str) -> trajectory.trajectory:
+
+        trajectorybuilderloc: trajectorybuilder.trajectorybuilder = trajectorybuilder.trajectorybuilder()
+        return trajectorybuilderloc.build_path_from_connected_paths(graphnetwork, paths_data, path_name)
 
     def get_visited_set_for_key_set(self, \
                                     roadnetwork_graphsearch: roadnetworkgraphsearch.roadnetworkgraphsearch,\

@@ -108,7 +108,7 @@ class connectedsegments:
                 preprocessedsegment: segment.segment = preprocessed_segments[roadid]
                 nodeslist: list = preprocessedsegment.nodes.nodeslist
                 incomingids = preprocessedsegment.predecessors
-                if len(incomingids) >= 1:
+                if incomingids is not None and len(incomingids) >= 1:
                     incomingid = incomingids[0]
                     incomingseg: segment.segment = preprocessed_segments[incomingid]
                     print("build_connected_segments-: ", roadid, ", incoming", incomingid)
@@ -146,7 +146,7 @@ class connectedsegments:
 
             predecessors: list = preprocessedsegment.predecessors
             nodeslist: list = preprocessedsegment.nodes.nodeslist
-            if len(predecessors) >= 1:
+            if predecessors is not None and len(predecessors) >= 1:
                 predecessorid = predecessors[0]  # closest predecessor
                 predecessorseg: segment.segment = preprocessed_segments[predecessorid]
                 print("build_connected_segments-: ", trajectory_path_id, ", incoming", predecessorid)

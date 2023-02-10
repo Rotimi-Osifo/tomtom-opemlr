@@ -324,11 +324,11 @@ class roadnetworkgraphsearch:
         self.__getstartdata()
         trajectorydataloc:  trajectorydata.trajectorydata = self.trajectorydatalist[trajectory_store_key]
         segment_processor = graphprocessor.graphprocessor()
-        trajectory_segments = segment_processor.preprocessext(graphnetwork,
-                                                              trajectorydataloc.trajectorystart,
-                                                              trajectorydataloc.trajectoryend,
-                                                              trajectorydataloc.lanedirection
-                                                              )
+        trajectory_segments = segment_processor.preprocesse(graphnetwork,
+                                                            trajectorydataloc.trajectorystart,
+                                                            trajectorydataloc.trajectoryend,
+                                                            trajectorydataloc.lanedirection
+                                                            )
 
         trajectory_start_segment: segment.segment = trajectory_segments[trajectorydataloc.trajectorystart]
         trajectory_path_list: list = list(trajectory_start_segment.successors)
@@ -356,11 +356,11 @@ class roadnetworkgraphsearch:
     def buildconnected_segments(self, graphnetwork, trajectoryData :trajectorydata.trajectorydata):
 
         segment_processor = graphprocessor.graphprocessor()
-        trajectory_segments = segment_processor.preprocessext(graphnetwork,
-                                                              trajectoryData.trajectorystart,
-                                                              trajectoryData.trajectoryend,
-                                                              trajectoryData.lanedirection
-                                                              )
+        trajectory_segments = segment_processor.preprocesse(graphnetwork,
+                                                            trajectoryData.trajectorystart,
+                                                            trajectoryData.trajectoryend,
+                                                            trajectoryData.lanedirection
+                                                            )
 
         trajectory_start_segment: segment.segment = trajectory_segments[trajectoryData.trajectorystart]
         trajectory_path_list: list = list(trajectory_start_segment.successors)
@@ -382,5 +382,28 @@ class roadnetworkgraphsearch:
         featurecollectiondata.writeCollection(
             data_path + trajectoryData.mapfilename + "_" + trajectoryData.ref + ".json",
             featurecollectiondata.all_collection)
+
+        self.trajectoriesstore[trajectoryData.trajectorystart] = re_initialized_trajectory_segments
+
+    def buildconnected_segmentsext(self, graphnetwork, trajectoryData :trajectorydata.trajectorydata):
+
+        segment_processor = graphprocessor.graphprocessor()
+        trajectory_segments = segment_processor.preprocesse(graphnetwork,
+                                                            trajectoryData.trajectorystart,
+                                                            trajectoryData.trajectoryend,
+                                                            trajectoryData.lanedirection
+                                                            )
+
+        trajectory_start_segment: segment.segment = trajectory_segments[trajectoryData.trajectorystart]
+        trajectory_path_list: list = list(trajectory_start_segment.successors)
+        trajectory_path_list.insert(0, trajectoryData.trajectorystart)
+
+        connected_segments = connectedsegments.connectedsegments()
+        re_initialized_trajectory_segments = connected_segments.buildconnectedsegmentsext(trajectory_segments,
+                                                                                          trajectory_path_list)
+
+        featurecollectiondata = fcData.FeatureCollectionData()
+        featurecollectiondata.createCollectionsFromConnectedSegments(trajectory_path_list,
+                                                                     re_initialized_trajectory_segments)
 
         self.trajectoriesstore[trajectoryData.trajectorystart] = re_initialized_trajectory_segments
