@@ -17,7 +17,7 @@ import Nodes
 import Lines
 import Node
 import segment
-import Node as nd
+
 
 
 class FeatureCollectionData:

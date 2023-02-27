@@ -23,7 +23,7 @@ class similarity_analysis:
         return lstr
 
     def compute_similarity(self, first, second):
-
+        #Not that this reutrns values in degrees since coordinate conversion has not been done
         first_as_linestring = pygeos.Geometry(self.convert_to_ln_str(first))
         second_as_linestring = pygeos.Geometry(self.convert_to_ln_str(second))
         fd =frechet_distance(first_as_linestring, second_as_linestring, densify=0.5)
